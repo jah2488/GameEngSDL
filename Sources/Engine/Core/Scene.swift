@@ -8,5 +8,5 @@ protocol Scene {
   func start(game: Game)
   func draw(game: Game)
   func update(delta: Float)
-  func input(keys: Keys.State)
+  func input(keys: Keys.State, game: Game)
 }

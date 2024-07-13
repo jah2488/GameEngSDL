@@ -10,16 +10,16 @@ let package = Package(
     // Targets can depend on other targets in this package and products from dependencies.
     .systemLibrary(name: "CSDL3", pkgConfig: "sdl3"),
     .systemLibrary(name: "CSDL3_image", pkgConfig: "sdl3-image"),
+    .systemLibrary(name: "CSDL3_ttf", pkgConfig: "sdl3-ttf"),
     .executableTarget(
       name: "GameEngSDL",
-      dependencies: ["CSDL3", "CSDL3_image"],
+      dependencies: ["CSDL3", "CSDL3_image", "CSDL3_ttf"],
       path: "./Sources/Engine",
       resources: [
         .copy("Assets/")
       ],
       linkerSettings: [
-        .linkedLibrary("sdl3"),
-        .linkedLibrary("SDL3_image"),
+        .linkedLibrary("pthread"),
         .unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "/usr/local/lib"]),
       ]),
   ]

@@ -1,0 +1,5 @@
+module CSDL3_ttf [system] {
+    header "SDL_ttf.h"
+    link "libsdl3-ttf"
+    export *
+}
