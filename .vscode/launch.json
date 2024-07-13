@@ -1,0 +1,28 @@
+{
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "sourceLanguages": [
+        "swift"
+      ],
+      "args": [],
+      "cwd": "${workspaceFolder:GameEngSDL}",
+      "name": "Debug GameEngSDL",
+      "program": "${workspaceFolder:GameEngSDL}/.build/debug/GameEngSDL",
+      "preLaunchTask": "swift: Build Debug GameEngSDL"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "sourceLanguages": [
+        "swift"
+      ],
+      "args": [],
+      "cwd": "${workspaceFolder:GameEngSDL}",
+      "name": "Release GameEngSDL",
+      "program": "${workspaceFolder:GameEngSDL}/.build/release/GameEngSDL",
+      "preLaunchTask": "swift: Build Release GameEngSDL"
+    }
+  ]
+}
