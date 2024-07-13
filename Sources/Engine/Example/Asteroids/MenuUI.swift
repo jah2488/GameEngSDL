@@ -3,6 +3,7 @@ import CSDL3_ttf
 class MenuUI: Renderable, Node {
   var id: UInt64
   var children: [any Node]
+  var parent: (any Node)?
 
   var font: OpaquePointer!
 

@@ -16,7 +16,7 @@ class Asteroids: Game {
     self.name = name
     self.scenes = []
     self.state = .stopped
-    self.currentScene = MenuScene(id: 1, name: "Play")
+    self.currentScene = MenuScene(id: 1, name: "Menu")
     // self.currentScene = PlayScene(id: 1, name: "Play")
     self.width = width
     self.height = height

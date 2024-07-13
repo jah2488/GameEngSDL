@@ -1,4 +1,5 @@
 class StarBackground: Renderable, Node {
+  var parent: (any Node)?
   let bg = Asset(path: "bg.png")
   let bg2 = Asset(path: "bg-trans.png")
   let bg3 = Asset(path: "bg3.png")
@@ -11,6 +12,7 @@ class StarBackground: Renderable, Node {
   var gameTicks: UInt64 = 0
 
   func start(game: any Game) {
+    print("Starting StarBackground")
   }
 
   func draw(game: any Game) {

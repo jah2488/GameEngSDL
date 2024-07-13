@@ -7,7 +7,7 @@ class MenuScene: Scene {
   init(id: UInt64, name: String) {
     self.id = id
     self.name = name
-    self.nodes = [MenuUI()]
+    self.nodes = [StarBackground(), MenuUI()]
   }
 
   func load() {
