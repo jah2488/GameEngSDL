@@ -132,9 +132,15 @@ class Entity: Renderable {
 
   required init() {}
 
-  /// Called when the entity is added to the scene.
-  func start(game: any Game) {
+  func _start(game: any Game) {
+    start(game: game)
+    self.children.forEach { child in
+      child._start(game: game)
+    }
   }
+
+  /// Called when the entity is added to the scene.
+  func start(game: any Game) {}
 
   /// [Internal] Is the method that is called from the main gameloop to draw the entity.
   /// Always calls ``draw`` before drawing children.
@@ -150,8 +156,7 @@ class Entity: Renderable {
   /// Called when the entity should be drawn (at most once a frame)
   /// Always called after ``update``
   /// - Parameter game: A reference to the main game object
-  func draw(game: any Game) {
-  }
+  func draw(game: any Game) {}
 
   /// [Internal] Is the method that is called from the main gameloop to update the entity.
   /// Always calls ``update`` before updating children.
@@ -167,7 +172,13 @@ class Entity: Renderable {
   /// Called when the entity should be updated (possibly multiple times a frame)
   /// Always called after `input` and before `draw`
   /// - Parameter delta: The time (in milliseconds) since the last update
-  func update(delta: Double) {
+  func update(delta: Double) {}
+
+  func _input(keys: Keys.State, game: any Game) {
+    input(keys: keys, game: game)
+    self.children.forEach { child in
+      child._input(keys: keys, game: game)
+    }
   }
 
   /// Called when the entity should process input. Always called before `update`
@@ -175,8 +186,7 @@ class Entity: Renderable {
   /// - Parameters:
   ///   - keys: A struct containing the current state of the keyboard
   ///   - game: A reference to the main game object
-  func input(keys: Keys.State, game: any Game) {
-  }
+  func input(keys: Keys.State, game: any Game) {}
 
   /// [Internal] Is the method that is called from the main gameloop to destroy the entity.
   /// Always calls ``destroy`` before destroying children.
@@ -191,6 +201,5 @@ class Entity: Renderable {
 
   /// Called when the entity should be destroyed.
   /// Always called after `draw` and `update` and only on entities where ``alive`` is false.
-  func destroy() {
-  }
+  func destroy() {}
 }

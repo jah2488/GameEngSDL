@@ -18,7 +18,7 @@ class MenuUI: Entity {
 
   override func input(keys: Keys.State, game: any Game) {
     if !keys.empty() {
-      game.changeScene(scene: PlayScene(id: UUID(), name: "PlayScene", nodes: []))
+      game.changeScene(scene: PlayScene(name: "PlayScene"))
     }
   }
 }

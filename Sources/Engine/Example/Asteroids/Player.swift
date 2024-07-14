@@ -151,7 +151,6 @@ class Bullet: Entity {
   }
 
   override func draw(game: any Game) {
-    print("Drawing bullet")
     game.drawTexture(
       resource: bullet,
       x: Float(self.position.x), y: Float(self.position.y), width: 32, height: 32,

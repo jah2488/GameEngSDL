@@ -1,67 +1,23 @@
 import Foundation
 
 class PlayScene: Scene {
-  var parent: (any Node)?
 
-  var children: [Entity]
-
-  var id: UUID
-  var name: String
-  var nodes: [Entity]
-
-  init(id: UUID, name: String, nodes: [Entity]) {
-    self.id = id
-    self.name = name
-    self.children = []
-    self.nodes = []
-    var childs: [Entity] = [
-      StarBackground(), Player(), Asteroid(), Asteroid(), Asteroid(), Asteroid(),
-    ]
-    for index in childs.indices {
-      childs[index].scene = self
-    }
-
-    self.children = childs
+  override func start(game: any Game) {
+    addChild(StarBackground())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Player())
   }
 
-  func load() {
+  override func load() {
     print("Loading scene \(self.name)")
   }
 
-  func unload() {
+  override func unload() {
     print("Unloading scene \(self.name)")
-  }
-
-  func start(game: Game) {
-    children.forEach { node in
-      if let node = node as? Renderable {
-        node.start(game: game)
-      }
-    }
-  }
-
-  func draw(game: Game) {
-    children.forEach { node in
-      if let node = node as? Entity {
-        node._draw(game: game)
-      }
-    }
-  }
-
-  func update(delta: Double) {
-    children.forEach { node in
-      if let node = node as? Entity {
-        node._update(delta: delta)
-      }
-    }
-  }
-
-  func input(keys: Keys.State, game: Game) {
-    children.forEach { node in
-      if let node = node as? Renderable {
-        node.input(keys: keys, game: game)
-      }
-    }
   }
 
 }
@@ -86,7 +42,7 @@ class Asteroid: Entity {
   }
 
   override func update(delta: Double) {
-    self.rotation = rotation + Measurement(value: speed * delta, unit: UnitAngle.radians)
+    self.rotation = rotation + Measurement(value: (speed / 10) * delta, unit: UnitAngle.radians)
 
     let velocityX = cos(self.rotation.value) * speed
     let velocityY = sin(self.rotation.value) * speed

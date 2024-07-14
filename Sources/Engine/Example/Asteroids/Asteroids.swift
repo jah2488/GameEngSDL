@@ -16,11 +16,12 @@ class Asteroids: Game {
     self.name = name
     self.scenes = []
     self.state = .stopped
-    self.currentScene = MenuScene(id: UUID(), name: "Menu")
+    self.currentScene = MenuScene(name: "Menu")
     // self.currentScene = PlayScene(id: 1, name: "Play")
     self.width = width
     self.height = height
     print("Game \(name) initialized at \(width)x\(height)")
+    self.currentScene!._load()
   }
 
   var isRunning: Bool {
@@ -30,7 +31,7 @@ class Asteroids: Game {
   func start(renderer: OpaquePointer) {
     self.state = .running
     self.renderer = renderer
-    self.currentScene!.start(game: self)
+    self.currentScene!._start(game: self)
   }
 
   func stop() {
@@ -79,15 +80,15 @@ class Asteroids: Game {
   }
 
   func draw() {
-    self.currentScene!.draw(game: self)
+    self.currentScene!._draw(game: self)
   }
 
   func update(delta: Double) {
-    self.currentScene!.update(delta: delta)
+    self.currentScene!._update(delta: delta)
   }
 
   func input(keys: Keys.State) {
-    self.currentScene!.input(keys: keys, game: self)
+    self.currentScene!._input(keys: keys, game: self)
   }
 
   func changeScene(scene: Scene) {
