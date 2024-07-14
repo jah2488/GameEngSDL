@@ -19,7 +19,7 @@ class Scene: Renderable {
 
   init(name: String, autoLoad: Bool = true) {
     self.name = name
-    if !isLoaded && autoLoad {
+    if autoLoad {
       _load()
     }
   }
@@ -34,48 +34,68 @@ class Scene: Renderable {
   func load() {}
 
   final func _unload() {
-    unload()
+    if isLoaded {
+      unload()
+    }
     isLoaded = false
   }
 
   func unload() {}
 
+  var hasStarted: Bool = false
   /// [Internal] Is the method that is called to draw the scene.
   /// Only called one time after ``load``
-  final func _start(game: any Game) {
-    if isLoaded {
+  final func _start(game: Game) {
+    if isLoaded && !hasStarted {
+      hasStarted = true
       start(game: game)
+
+      self.children.forEach { node in
+        node._start(game: game)
+      }
     } else {
       print("Scene \(id) _start(:game) was called before loading has completed.")
     }
   }
 
-  func start(game: any Game) {}
+  func start(game: Game) {}
 
   /// [Internal] Is the method that is called to draw the scene.
-  final func _draw(game: any Game) {
-    draw(game: game)
-    self.children.forEach { node in
-      node._draw(game: game)
+  final func _draw(game: Game) {
+    if isLoaded {
+      draw(game: game)
+      self.children.forEach { node in
+        node._draw(game: game)
+      }
+    } else {
+      // print("Scene \(id) _draw(:game) was called while it was unloaded.")
     }
   }
-  func draw(game: any Game) {}
+  func draw(game: Game) {}
 
   final func _update(delta: Double) {
-    update(delta: delta)
-    self.children.forEach { node in
-      node._update(delta: delta)
+    if isLoaded {
+      update(delta: delta)
+      self.children.forEach { node in
+        node._update(delta: delta)
+      }
+    } else {
+      // print("Scene \(id) _update(:delta) was called while it was unloaded.")
     }
   }
   func update(delta: Double) {}
 
-  final func _input(keys: Keys.State, game: any Game) {
-    input(keys: keys, game: game)
-    self.children.forEach { node in
-      node._input(keys: keys, game: game)
+  final func _input(keys: Keys.State, game: Game) {
+    if isLoaded {
+      input(keys: keys, game: game)
+      self.children.forEach { node in
+        node._input(keys: keys, game: game)
+      }
+    } else {
+      // print("Scene \(id) _input(:keys, :game) was called while it was unloaded.")
     }
   }
-  func input(keys: Keys.State, game: any Game) {}
+  func input(keys: Keys.State, game: Game) {}
 
   final func _destroy() {
     self.children.forEach { node in

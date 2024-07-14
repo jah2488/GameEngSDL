@@ -12,7 +12,7 @@ class StarBackground: Entity {
 
   var gameTicks: UInt64 = 0
 
-  override func draw(game: any Game) {
+  override func draw(game: Game) {
     gameTicks += 1
     let h = Float(game.height)
     let w = Float(game.width)
@@ -29,26 +29,26 @@ class StarBackground: Entity {
       x3 = 0
     }
 
-    game.drawTexture(
+    game.r.drawTexture(
       resource: bg, x: self.x, y: 0, width: w, height: h,
       rotation: 0, tint: Color(r: 255, g: 255, b: 255, a: 255))
-    game.drawTexture(
+    game.r.drawTexture(
       resource: bg2, x: self.x2, y: 0, width: w, height: h,
       rotation: 0, tint: Color(r: 0, g: 0, b: 255, a: 255))
-    game.drawTexture(
+    game.r.drawTexture(
       resource: bg3, x: self.x3, y: 0, width: w, height: h,
       rotation: 0, tint: Color(r: 255, g: 200, b: 255, a: 25))
 
-    game.drawTexture(
+    game.r.drawTexture(
       resource: bg, x: self.x - w, y: -20, width: w,
       height: h,
       rotation: 0, tint: Color(r: 255, g: 255, b: 255, a: 255))
 
-    game.drawTexture(
+    game.r.drawTexture(
       resource: bg2, x: (self.x2 - w), y: 0, width: w,
       height: h,
       rotation: 0, tint: Color(r: 10, g: 10, b: 255, a: 255))
-    game.drawTexture(
+    game.r.drawTexture(
       resource: bg3, x: (self.x3 - w), y: 0, width: w,
       height: h,
       rotation: 0, tint: Color(r: 255, g: 255, b: 255, a: 25))

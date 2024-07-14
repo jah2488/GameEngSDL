@@ -16,11 +16,12 @@ class Player: Entity {
   override func start(game: Game) {
     self.position.x = Float(game.width) / 2
     self.position.y = Float(game.height) / 2
+    print("Player starting at \(self.position.x), \(self.position.y)")
   }
 
   override func draw(game: Game) {
-    // game.drawRect(x: self.position.x, y: self.position.y, width: 10, height: 10)
-    game.drawTexture(
+    // game.r.drawRect(x: self.position.x, y: self.position.y, width: 10, height: 10)
+    game.r.drawTexture(
       resource: self.ship, x: Float(self.position.x), y: Float(self.position.y), width: 64,
       height: 64,
       rotation: rotation.converted(to: .degrees).value - 90,  //(self.angle - Angle(-1.57079, inDegrees: false)).valueInDegrees,
@@ -105,8 +106,8 @@ class Thruster: Entity {
     self.position.y = 34
   }
 
-  override func draw(game: any Game) {
-    game.drawTexture(
+  override func draw(game: Game) {
+    game.r.drawTexture(
       resource: thrust, x: Float(self.position.x + ship.position.x),
       y: Float(self.position.y + ship.position.y),
       width: 16, height: 16,
@@ -126,7 +127,7 @@ class Bullet: Entity {
     self.createdAt = Date().timeIntervalSince1970
   }
 
-  override func start(game: any Game) {
+  override func start(game: Game) {
     // TODO: None of this resource loading should be happening here in object creation. Only the playing of the audio.
     var audioSpec = SDL_AudioSpec()
     audioSpec.format = UInt16(SDL_AUDIO_F32)
@@ -150,8 +151,8 @@ class Bullet: Entity {
 
   }
 
-  override func draw(game: any Game) {
-    game.drawTexture(
+  override func draw(game: Game) {
+    game.r.drawTexture(
       resource: bullet,
       x: Float(self.position.x), y: Float(self.position.y), width: 32, height: 32,
       rotation: (rotation.converted(to: .degrees).value - 90),  //(self.rotation - Angle(-1.57079, inDegrees: false)).valueInDegrees,

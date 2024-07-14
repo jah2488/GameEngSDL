@@ -2,7 +2,7 @@ import Foundation
 
 class PlayScene: Scene {
 
-  override func start(game: any Game) {
+  override func start(game: Game) {
     addChild(StarBackground())
     addChild(Asteroid())
     addChild(Asteroid())
@@ -33,8 +33,8 @@ class Asteroid: Entity {
     self.position.y = Float.random(in: 0...1300)
   }
 
-  override func draw(game: any Game) {
-    game.drawTexture(
+  override func draw(game: Game) {
+    game.r.drawTexture(
       resource: asteroid, x: Float(self.position.x), y: Float(self.position.y),
       width: self.width, height: self.width,
       rotation: self.rotation.converted(to: .degrees).value,

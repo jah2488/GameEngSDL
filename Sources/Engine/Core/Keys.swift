@@ -10,7 +10,9 @@ class Keys {
     var keys: [Key: KeyState] = [:]
     var modifiers: [Key: KeyState] = [:]
     func empty() -> Bool {
-      keys.isEmpty && modifiers.isEmpty
+      return keys.allSatisfy({ key in
+        key.value == .up
+      }) && modifiers.isEmpty
     }
     mutating func resetReleased() {
       keys = keys.mapValues { $0 == .released ? .up : $0 }

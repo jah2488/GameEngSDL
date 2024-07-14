@@ -132,7 +132,7 @@ class Entity: Renderable {
 
   required init() {}
 
-  func _start(game: any Game) {
+  func _start(game: Game) {
     start(game: game)
     self.children.forEach { child in
       child._start(game: game)
@@ -140,11 +140,11 @@ class Entity: Renderable {
   }
 
   /// Called when the entity is added to the scene.
-  func start(game: any Game) {}
+  func start(game: Game) {}
 
   /// [Internal] Is the method that is called from the main gameloop to draw the entity.
   /// Always calls ``draw`` before drawing children.
-  func _draw(game: any Game) {
+  func _draw(game: Game) {
     draw(game: game)
     self.children.forEach { child in
       if child.shouldDraw {
@@ -156,11 +156,16 @@ class Entity: Renderable {
   /// Called when the entity should be drawn (at most once a frame)
   /// Always called after ``update``
   /// - Parameter game: A reference to the main game object
-  func draw(game: any Game) {}
+  func draw(game: Game) {}
 
   /// [Internal] Is the method that is called from the main gameloop to update the entity.
   /// Always calls ``update`` before updating children.
   func _update(delta: Double) {
+    if shouldDestroy {
+      _destroy()
+      return
+    }
+
     update(delta: delta)
     self.children.forEach { child in
       if child.shouldUpdate {
@@ -174,7 +179,7 @@ class Entity: Renderable {
   /// - Parameter delta: The time (in milliseconds) since the last update
   func update(delta: Double) {}
 
-  func _input(keys: Keys.State, game: any Game) {
+  func _input(keys: Keys.State, game: Game) {
     input(keys: keys, game: game)
     self.children.forEach { child in
       child._input(keys: keys, game: game)
@@ -186,7 +191,7 @@ class Entity: Renderable {
   /// - Parameters:
   ///   - keys: A struct containing the current state of the keyboard
   ///   - game: A reference to the main game object
-  func input(keys: Keys.State, game: any Game) {}
+  func input(keys: Keys.State, game: Game) {}
 
   /// [Internal] Is the method that is called from the main gameloop to destroy the entity.
   /// Always calls ``destroy`` before destroying children.

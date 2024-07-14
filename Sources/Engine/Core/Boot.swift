@@ -1,0 +1,108 @@
+import CSDL3
+import CSDL3_image
+import CSDL3_ttf
+import Foundation
+
+class Boot {
+  var name: String
+  var width: Int32
+  var height: Int32
+
+  var window: OpaquePointer!
+  var renderer: OpaquePointer!
+
+  var windowFlags: UInt64 = SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_RESIZABLE
+
+  init(_name: String = "Game", _width: Int32 = 800, _height: Int32 = 600) {
+    self.name = _name
+    self.width = _width
+    self.height = _height
+
+    SDL_Init(UInt32(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO))
+    IMG_Init(Int32(IMG_INIT_PNG.rawValue))
+    TTF_Init()
+
+    let _ = SDL_GetDesktopDisplayMode(SDL_GetPrimaryDisplay())
+
+    self.window = SDL_CreateWindow(name, width, height, windowFlags)
+    self.renderer = SDL_CreateRenderer(window, nil)
+
+    SDL_ShowWindow(window)
+    SDL_GetWindowSizeInPixels(window, &width, &height)
+    var rect = SDL_Rect(x: 0, y: 0, w: width, h: height)
+    SDL_GetRenderViewport(renderer, &rect)
+    width = Int32(rect.w)
+    height = Int32(rect.h)
+
+    let icon = IMG_Load("GameEngSDL_GameEngSDL.bundle/Assets/icon.png")
+    SDL_SetWindowIcon(window, icon)
+    SDL_DestroySurface(icon)
+
+    SDL_SetRenderScale(renderer, 1, 1)
+  }
+
+  deinit {
+    print("Deinit Boot")
+    TTF_Quit()
+    IMG_Quit()
+    SDL_Quit()
+  }
+
+  func run(game: Game) {
+    game._start()
+    var now = SDL_GetPerformanceCounter()
+    var delta: Double = 0
+    var keyStates = Keys.State()
+    while game.isRunning {
+      print("--- [\(SDL_GetTicks())] ---")
+      keyStates.resetReleased()
+      let last = now
+      now = SDL_GetPerformanceCounter()
+      delta = Double((now - last) * 1000 / SDL_GetPerformanceFrequency()) * 0.001
+      var event = SDL_Event()
+      while SDL_PollEvent(&event) != 0 {
+        switch event.type {
+        case SDL_EVENT_KEY_DOWN.rawValue:
+          keyStates.keys[Keys.key(from: event.key.key)] = .down
+          break
+        case SDL_EVENT_KEY_UP.rawValue:
+          keyStates.keys[Keys.key(from: event.key.key)] = .released
+          break
+        case SDL_EVENT_WINDOW_DESTROYED.rawValue:
+          game._stop()
+          break
+        case SDL_EVENT_QUIT.rawValue:
+          game._stop()
+          break
+        case SDL_EVENT_WINDOW_MOVED.rawValue:
+          break
+        case SDL_EVENT_WINDOW_RESIZED.rawValue:
+          print("window resized to \(event.window.data1), \(event.window.data2)")
+          var rect = SDL_Rect(x: 0, y: 0, w: self.width, h: self.height)
+          SDL_GetRenderViewport(renderer, &rect)
+          game.width = Int(rect.w)
+          game.height = Int(rect.h)
+          break
+        default:
+          break
+        }
+      }
+
+      //Send pressed data to game scenes and nodes
+      if !keyStates.empty() {
+        print("calling input")
+        game._input(keys: keyStates)
+      }
+
+      game._update(delta: delta)
+
+      let c = game.clearColor
+      SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a)
+      SDL_RenderClear(renderer)
+
+      game._draw()
+
+      SDL_RenderPresent(renderer)
+    }
+  }
+}
