@@ -1,10 +1,15 @@
 import Foundation
 
 class MenuScene: Scene {
+  internal init(id: UUID, name: String, nodes: [Entity]) {
+    self.id = id
+    self.name = name
+    self.nodes = nodes
+  }
 
   var id: UUID
   var name: String
-  var nodes: [Node]
+  var nodes: [Entity]
 
   init(id: UUID, name: String) {
     self.id = id

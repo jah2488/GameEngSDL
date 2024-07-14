@@ -1,84 +1,59 @@
 import CSDL3
 import Foundation
 
-class Player: Renderable, Node {
-  var relative: Bool = false
-  var id: UUID
-  var children: [any Node]
-  var parent: (any Node)?
-
-  var position = Vector2(x: 0, y: 0)
-  var velocity = Vector2(x: 0, y: 0)
-  var angle: Angle = Angle(0, inDegrees: false)
+class Player: Entity {
   var thrust: Double = 0
   var rotationSpeed: Double = 0
   var ship = Asset(path: "ship.png")
 
   required init() {
-    self.id = UUID()
+    super.init()
     let thruster = Thruster()
     self.children = [thruster]
     thruster.parent = self
   }
 
-  func start(game: Game) {
-    self.position.x = Double(game.width) / 2
-    self.position.y = Double(game.height) / 2
+  override func start(game: Game) {
+    self.position.x = Float(game.width) / 2
+    self.position.y = Float(game.height) / 2
   }
 
-  func draw(game: Game) {
+  override func draw(game: Game) {
     // game.drawRect(x: self.position.x, y: self.position.y, width: 10, height: 10)
     game.drawTexture(
       resource: self.ship, x: Float(self.position.x), y: Float(self.position.y), width: 64,
       height: 64,
-      rotation: (self.angle - Angle(-1.57079, inDegrees: false)).valueInDegrees,
+      rotation: rotation.converted(to: .degrees).value - 90,  //(self.angle - Angle(-1.57079, inDegrees: false)).valueInDegrees,
       tint: Color(r: 255, g: 255, b: 255, a: 255))
-
-    for child in self.children {
-      if let child = child as? Renderable {
-        if let child = child as? Thruster {
-          // child.position = Vector2(x: self.position.x, y: self.position.y)
-          // child.rotation = self.angle
-          child.visible = self.thrust > 0
-        }
-        child.draw(game: game)
-      }
-    }
   }
 
-  func update(delta: Double) {
-    angle = angle + rotationSpeed * Double(delta)
+  override func update(delta: Double) {
+    rotation = rotation + Measurement(value: rotationSpeed * delta, unit: UnitAngle.radians)
 
-    let ax = thrust * cos(angle.value)
-    let ay = thrust * sin(angle.value)
+    let ax = thrust * cos(rotation.value)
+    let ay = thrust * sin(rotation.value)
 
-    velocity.x += ax * Double(delta)
-    velocity.y += ay * Double(delta)
+    velocity.x += Float(ax * delta)
+    velocity.y += Float(ay * delta)
 
-    position.x += velocity.x * Double(delta)
-    position.y += velocity.y * Double(delta)
+    position.x += velocity.x * Float(delta)
+    position.y += velocity.y * Float(delta)
 
     velocity.x *= 0.99
     velocity.y *= 0.99
-
-    for child in self.children {
-      if let child = child as? Renderable {
-        child.update(delta: delta)
-      }
-    }
   }
 
-  func input(keys: Keys.State, game: Game) {
+  override func input(keys: Keys.State, game: Game) {
     //todo replace direct key access with keymaps
     if keys.isPressed(.w) {
       if thrust < 200 {
-        thrust += 50
+        thrust -= 50
       }
     }
 
     if keys.isPressed(.s) {
       if thrust > -200 {
-        thrust -= 50
+        thrust += 50
       }
     }
 
@@ -109,7 +84,7 @@ class Player: Renderable, Node {
   func fire(game: Game) {
     let bullet = Bullet()
     bullet.position = self.position
-    bullet.rotation = self.angle
+    bullet.rotation = self.rotation
     bullet.parent = self
     self.children.append(bullet)
     bullet.start(game: game)
@@ -117,74 +92,41 @@ class Player: Renderable, Node {
 
 }
 
-class Thruster: Renderable, Node {
-  var relative: Bool = true
-  var visible = false
-  var position = Vector2(x: 0, y: 0)
-  var rotation: Angle = Angle(0, inDegrees: false)
+class Thruster: Entity {
   var thrust = Asset(path: "thrust.png")
-  var parent: (any Node)?
 
   var ship: Player {
     return self.parent as! Player
   }
 
   required init() {
-    self.id = UUID()
-    self.children = []
+    super.init()
     self.position.x = 36
     self.position.y = 34
   }
 
-  func start(game: any Game) {
-
-  }
-
-  func draw(game: any Game) {
-    if !self.visible {
-      return
-    }
+  override func draw(game: any Game) {
     game.drawTexture(
       resource: thrust, x: Float(self.position.x + ship.position.x),
       y: Float(self.position.y + ship.position.y),
       width: 16, height: 16,
-      rotation: (self.rotation - Angle(-1.57079, inDegrees: false)).valueInDegrees,
+      rotation: rotation.converted(to: UnitAngle.degrees).value,  //(self.rotation - Angle(-1.57079, inDegrees: false)).valueInDegrees,
       tint: Color(r: 255, g: 255, b: 255, a: 255))
   }
-
-  func update(delta: Double) {
-
-  }
-
-  func input(keys: Keys.State, game: any Game) {
-
-  }
-
-  var id: UUID
-
-  var children: [any Node]
-
 }
 
-class Bullet: Renderable, Node {
-  var relative: Bool = false
-  var id: UUID
-  var children: [any Node]
-  var parent: (any Node)?
+class Bullet: Entity {
   var bullet = Asset(path: "bullet.png")
   var lifetime: Double = 4.1
   var createdAt: Double = 0
 
-  var position = Vector2(x: 0, y: 0)
-  var rotation: Angle = Angle(0, inDegrees: false)
-
   required init() {
-    self.id = UUID()
-    self.children = []
+    super.init()
+    self.relative = false
     self.createdAt = Date().timeIntervalSince1970
   }
 
-  func start(game: any Game) {
+  override func start(game: any Game) {
     // TODO: None of this resource loading should be happening here in object creation. Only the playing of the audio.
     var audioSpec = SDL_AudioSpec()
     audioSpec.format = UInt16(SDL_AUDIO_F32)
@@ -208,16 +150,17 @@ class Bullet: Renderable, Node {
 
   }
 
-  func draw(game: any Game) {
+  override func draw(game: any Game) {
+    print("Drawing bullet")
     game.drawTexture(
       resource: bullet,
       x: Float(self.position.x), y: Float(self.position.y), width: 32, height: 32,
-      rotation: (self.rotation - Angle(-1.57079, inDegrees: false)).valueInDegrees,
+      rotation: (rotation.converted(to: .degrees).value - 90),  //(self.rotation - Angle(-1.57079, inDegrees: false)).valueInDegrees,
       tint: Color.init(r: 255, g: 255, b: 255, a: 255))
   }
 
   let speed: Double = 800  // Speed of the bullet in units per second
-  func update(delta: Double) {
+  override func update(delta: Double) {
     let age = Date().timeIntervalSince1970 - self.createdAt
     if age > self.lifetime {
       // TODO: This functionality should be encapsulated in a helper
@@ -225,13 +168,13 @@ class Bullet: Renderable, Node {
       return
     }
 
-    let velocityX = cos(self.rotation.value) * speed
-    let velocityY = sin(self.rotation.value) * speed
+    let velocityX = cos(self.rotation.value) * speed * -1
+    let velocityY = sin(self.rotation.value) * speed * -1
 
     // Update the bullet's position based on the velocity
     // Delta is the time elapsed since the last frame, so multiplying by delta makes the movement frame-rate independent
-    self.position.x += Double(velocityX) * Double(delta)
-    self.position.y += Double(velocityY) * Double(delta)
+    self.position.x += Float(velocityX) * Float(delta)
+    self.position.y += Float(velocityY) * Float(delta)
 
     var rect = SDL_Rect(x: Int32(self.position.x), y: Int32(self.position.y), w: 32, h: 32)
     var _ = self.parent?.parent?.children.forEach { child in
@@ -246,9 +189,4 @@ class Bullet: Renderable, Node {
       }
     }
   }
-
-  func input(keys: Keys.State, game: any Game) {
-
-  }
-
 }

@@ -4,7 +4,7 @@ protocol Scene {
   var id: UUID { get }
   var name: String { get set }
 
-  var nodes: [Node] { get set }
+  var nodes: [Entity] { get set }
   func load()
   func unload()
   func start(game: Game)

@@ -1,8 +1,6 @@
 import Foundation
 
-class StarBackground: Renderable, Node {
-  var relative: Bool = false
-  var parent: (any Node)?
+class StarBackground: Entity {
   let bg = Asset(path: "bg.png")
   let bg2 = Asset(path: "bg-trans.png")
   let bg3 = Asset(path: "bg3.png")
@@ -14,11 +12,7 @@ class StarBackground: Renderable, Node {
 
   var gameTicks: UInt64 = 0
 
-  func start(game: any Game) {
-    print("Starting StarBackground")
-  }
-
-  func draw(game: any Game) {
+  override func draw(game: any Game) {
     gameTicks += 1
     let h = Float(game.height)
     let w = Float(game.width)
@@ -61,24 +55,11 @@ class StarBackground: Renderable, Node {
 
   }
 
-  func update(delta: Double) {
+  override func update(delta: Double) {
     let delta = Float(delta)
     x += speed * delta
     x2 += (speed * 2) * delta
     x3 += (speed * 8) * delta
-  }
-
-  func input(keys: Keys.State, game: any Game) {
-
-  }
-
-  var id: UUID
-
-  var children: [any Node]
-
-  required init() {
-    self.id = UUID()
-    self.children = []
   }
 
 }

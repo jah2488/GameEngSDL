@@ -43,8 +43,13 @@ class Entity: Renderable {
   /// Should this entities position be relative to its parent
   /// Default is `true`.
   var relative: Bool = true
+
+  /// The scene that this entity is a part of.
+  var scene: Scene?
+
   /// The parent of this entity.
   var parent: (Entity)?
+
   /// The children of this entity.
   var children: [Entity] = []
 
@@ -146,7 +151,6 @@ class Entity: Renderable {
   /// Always called after ``update``
   /// - Parameter game: A reference to the main game object
   func draw(game: any Game) {
-    preconditionFailure("draw(game:) must be implemented")
   }
 
   /// [Internal] Is the method that is called from the main gameloop to update the entity.
@@ -164,7 +168,6 @@ class Entity: Renderable {
   /// Always called after `input` and before `draw`
   /// - Parameter delta: The time (in milliseconds) since the last update
   func update(delta: Double) {
-    preconditionFailure("update(delta:) must be implemented")
   }
 
   /// Called when the entity should process input. Always called before `update`

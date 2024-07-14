@@ -57,7 +57,7 @@ class Main {
     SDL_SetWindowIcon(self.window, icon)
     SDL_DestroySurface(icon)
 
-    SDL_SetRenderScale(renderer, 2, 2)
+    SDL_SetRenderScale(renderer, 1, 1)
     print("Starting game with \(self.width) x \(self.height)")
     print("Viewport: \(rect.w) x \(rect.h)")
     game.start(renderer: renderer)
