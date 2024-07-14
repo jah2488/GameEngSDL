@@ -60,6 +60,7 @@ class Asteroids: Game {
     SDL_SetTextureScaleMode(text, SDL_SCALEMODE_NEAREST)
     let _ = withUnsafePointer(to: SDL_FRect(x: x, y: y, w: width, h: height)) { rect in
       SDL_SetTextureColorMod(text, tint.r, tint.g, tint.b)
+      //TODO: If I want to be able to rotate children that are relatively positioned, I need to be able to get their parent's rect from here. I need a better abstraction layer.
       SDL_RenderTextureRotated(renderer, text, nil, rect, rotation, nil, SDL_FLIP_NONE)
     }
   }

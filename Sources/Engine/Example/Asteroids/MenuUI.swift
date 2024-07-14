@@ -1,6 +1,7 @@
 import CSDL3_ttf
 
 class MenuUI: Renderable, Node {
+  var relative: Bool = false
   var id: UInt64
   var children: [any Node]
   var parent: (any Node)?

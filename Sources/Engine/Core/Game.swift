@@ -1,4 +1,6 @@
 protocol Game {
+  //TODO: This is cool (protocols), but there needs to be a base class that is inerited from for objects this complex.
+  //TODO: Add drawDebug boolean, that draws a debug rect around every object being drawn.
   var width: Int { get set }
   var height: Int { get set }
   var name: String { get set }

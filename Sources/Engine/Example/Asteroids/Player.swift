@@ -2,6 +2,7 @@ import CSDL3
 import Foundation
 
 class Player: Renderable, Node {
+  var relative: Bool = false
   var id: UInt64
   var children: [any Node]
   var parent: (any Node)?
@@ -15,7 +16,9 @@ class Player: Renderable, Node {
 
   required init() {
     self.id = 1
-    self.children = []
+    let thruster = Thruster()
+    self.children = [thruster]
+    thruster.parent = self
   }
 
   func start(game: Game) {
@@ -33,6 +36,11 @@ class Player: Renderable, Node {
 
     for child in self.children {
       if let child = child as? Renderable {
+        if let child = child as? Thruster {
+          // child.position = Vector2(x: self.position.x, y: self.position.y)
+          // child.rotation = self.angle
+          child.visible = self.thrust > 0
+        }
         child.draw(game: game)
       }
     }
@@ -109,7 +117,57 @@ class Player: Renderable, Node {
 
 }
 
+class Thruster: Renderable, Node {
+  var relative: Bool = true
+  var visible = false
+  var position = Vector2(x: 0, y: 0)
+  var rotation: Angle = Angle(0, inDegrees: false)
+  var thrust = Asset(path: "thrust.png")
+  var parent: (any Node)?
+
+  var ship: Player {
+    return self.parent as! Player
+  }
+
+  required init() {
+    self.id = 0
+    self.children = []
+    self.position.x = 36
+    self.position.y = 34
+  }
+
+  func start(game: any Game) {
+
+  }
+
+  func draw(game: any Game) {
+    if !self.visible {
+      return
+    }
+    game.drawTexture(
+      resource: thrust, x: Float(self.position.x + ship.position.x),
+      y: Float(self.position.y + ship.position.y),
+      width: 16, height: 16,
+      rotation: (self.rotation - Angle(-1.57079, inDegrees: false)).valueInDegrees,
+      tint: Color(r: 255, g: 255, b: 255, a: 255))
+  }
+
+  func update(delta: Float) {
+
+  }
+
+  func input(keys: Keys.State, game: any Game) {
+
+  }
+
+  var id: UInt64
+
+  var children: [any Node]
+
+}
+
 class Bullet: Renderable, Node {
+  var relative: Bool = false
   var id: UInt64
   var children: [any Node]
   var parent: (any Node)?
@@ -174,6 +232,19 @@ class Bullet: Renderable, Node {
     // Delta is the time elapsed since the last frame, so multiplying by delta makes the movement frame-rate independent
     self.position.x += Double(velocityX) * Double(delta)
     self.position.y += Double(velocityY) * Double(delta)
+
+    var rect = SDL_Rect(x: Int32(self.position.x), y: Int32(self.position.y), w: 32, h: 32)
+    var _ = self.parent?.parent?.children.forEach { child in
+      if let child = child as? Asteroid {
+        let pos = child.position
+        let size = child.width
+        var rect2 = SDL_Rect(x: Int32(pos.x), y: Int32(pos.y), w: Int32(size), h: Int32(size))
+        if SDL_HasRectIntersection(&rect, &rect2) == SDL_TRUE {
+          self.parent?.children.removeAll { $0 as? Bullet === self }
+          child.parent?.children.removeAll { $0 as? Asteroid === child }
+        }
+      }
+    }
   }
 
   func input(keys: Keys.State, game: any Game) {

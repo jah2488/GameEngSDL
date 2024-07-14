@@ -1,4 +1,5 @@
 class StarBackground: Renderable, Node {
+  var relative: Bool = false
   var parent: (any Node)?
   let bg = Asset(path: "bg.png")
   let bg2 = Asset(path: "bg-trans.png")
