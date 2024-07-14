@@ -1,3 +1,5 @@
+import Foundation
+
 class StarBackground: Renderable, Node {
   var relative: Bool = false
   var parent: (any Node)?
@@ -59,7 +61,8 @@ class StarBackground: Renderable, Node {
 
   }
 
-  func update(delta: Float) {
+  func update(delta: Double) {
+    let delta = Float(delta)
     x += speed * delta
     x2 += (speed * 2) * delta
     x3 += (speed * 8) * delta
@@ -69,12 +72,12 @@ class StarBackground: Renderable, Node {
 
   }
 
-  var id: UInt64
+  var id: UUID
 
   var children: [any Node]
 
   required init() {
-    self.id = 0
+    self.id = UUID()
     self.children = []
   }
 

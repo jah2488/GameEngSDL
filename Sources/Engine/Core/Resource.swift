@@ -1,7 +1,8 @@
 import CSDL3
+import Foundation
 
 protocol Resource: Hashable {
-  var id: UInt64 { get }
+  var id: UUID { get }
   var type: ResourceType { get }
   var path: String { get }
   var texture: OpaquePointer! { get }

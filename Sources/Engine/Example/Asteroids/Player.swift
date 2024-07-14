@@ -3,7 +3,7 @@ import Foundation
 
 class Player: Renderable, Node {
   var relative: Bool = false
-  var id: UInt64
+  var id: UUID
   var children: [any Node]
   var parent: (any Node)?
 
@@ -15,7 +15,7 @@ class Player: Renderable, Node {
   var ship = Asset(path: "ship.png")
 
   required init() {
-    self.id = 1
+    self.id = UUID()
     let thruster = Thruster()
     self.children = [thruster]
     thruster.parent = self
@@ -46,7 +46,7 @@ class Player: Renderable, Node {
     }
   }
 
-  func update(delta: Float) {
+  func update(delta: Double) {
     angle = angle + rotationSpeed * Double(delta)
 
     let ax = thrust * cos(angle.value)
@@ -130,7 +130,7 @@ class Thruster: Renderable, Node {
   }
 
   required init() {
-    self.id = 0
+    self.id = UUID()
     self.children = []
     self.position.x = 36
     self.position.y = 34
@@ -152,7 +152,7 @@ class Thruster: Renderable, Node {
       tint: Color(r: 255, g: 255, b: 255, a: 255))
   }
 
-  func update(delta: Float) {
+  func update(delta: Double) {
 
   }
 
@@ -160,7 +160,7 @@ class Thruster: Renderable, Node {
 
   }
 
-  var id: UInt64
+  var id: UUID
 
   var children: [any Node]
 
@@ -168,7 +168,7 @@ class Thruster: Renderable, Node {
 
 class Bullet: Renderable, Node {
   var relative: Bool = false
-  var id: UInt64
+  var id: UUID
   var children: [any Node]
   var parent: (any Node)?
   var bullet = Asset(path: "bullet.png")
@@ -179,7 +179,7 @@ class Bullet: Renderable, Node {
   var rotation: Angle = Angle(0, inDegrees: false)
 
   required init() {
-    self.id = 0
+    self.id = UUID()
     self.children = []
     self.createdAt = Date().timeIntervalSince1970
   }
@@ -217,7 +217,7 @@ class Bullet: Renderable, Node {
   }
 
   let speed: Double = 800  // Speed of the bullet in units per second
-  func update(delta: Float) {
+  func update(delta: Double) {
     let age = Date().timeIntervalSince1970 - self.createdAt
     if age > self.lifetime {
       // TODO: This functionality should be encapsulated in a helper

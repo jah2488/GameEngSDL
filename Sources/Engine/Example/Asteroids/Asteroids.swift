@@ -16,7 +16,7 @@ class Asteroids: Game {
     self.name = name
     self.scenes = []
     self.state = .stopped
-    self.currentScene = MenuScene(id: 1, name: "Menu")
+    self.currentScene = MenuScene(id: UUID(), name: "Menu")
     // self.currentScene = PlayScene(id: 1, name: "Play")
     self.width = width
     self.height = height
@@ -82,7 +82,7 @@ class Asteroids: Game {
     self.currentScene!.draw(game: self)
   }
 
-  func update(delta: Float) {
+  func update(delta: Double) {
     self.currentScene!.update(delta: delta)
   }
 

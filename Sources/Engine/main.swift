@@ -72,13 +72,13 @@ class Main {
 
   func run() {
     var now = SDL_GetPerformanceCounter()
-    var delta: Float = 0
+    var delta: Double = 0
     var keyStates = Keys.State()
     while game.isRunning {
       keyStates.resetReleased()
       let last = now
       now = SDL_GetPerformanceCounter()
-      delta = Float((now - last) * 1000 / SDL_GetPerformanceFrequency()) * 0.001
+      delta = Double((now - last) * 1000 / SDL_GetPerformanceFrequency()) * 0.001
       var event = SDL_Event()
       while SDL_PollEvent(&event) != 0 {
         switch event.type {

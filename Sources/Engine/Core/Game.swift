@@ -17,7 +17,7 @@ protocol Game {
     resource: any Resource, x: Float, y: Float, width: Float, height: Float, rotation: Double,
     tint: Color)
   func drawText(text: String, x: Float, y: Float, width: Float, height: Float)
-  func update(delta: Float)
+  func update(delta: Double)
   func input(keys: Keys.State)
   func changeScene(scene: Scene)
 }

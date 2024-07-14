@@ -5,11 +5,11 @@ class PlayScene: Scene, Node {
 
   var children: [any Node]
 
-  var id: UInt64
+  var id: UUID
   var name: String
   var nodes: [Node]
 
-  init(id: UInt64, name: String) {
+  init(id: UUID, name: String) {
     self.id = id
     self.name = name
     self.children = []
@@ -49,7 +49,7 @@ class PlayScene: Scene, Node {
     }
   }
 
-  func update(delta: Float) {
+  func update(delta: Double) {
     children.forEach { node in
       if let node = node as? Renderable {
         node.update(delta: delta)
@@ -72,14 +72,14 @@ class Asteroid: Renderable, Node {
   var position = Vector2(x: 0, y: 0)
   var rotation: Angle = Angle(0, inDegrees: false)
   var parent: (any Node)?
-  var id: UInt64
+  var id: UUID
   var children: [any Node]
   var asteroid = Asset(path: "asteroid.png")
   var speed: Double = Double.random(in: 20...200)
   var width: Float = 64 * Float.random(in: (0.2)...8)
 
   required init() {
-    self.id = 0
+    self.id = UUID()
     self.children = []
     self.position.x = Double.random(in: 0...800)
     self.position.y = Double.random(in: 0...1300)
@@ -97,7 +97,7 @@ class Asteroid: Renderable, Node {
       tint: Color(r: 255, g: 255, b: 255, a: 255))
   }
 
-  func update(delta: Float) {
+  func update(delta: Double) {
     self.rotation += Angle(speed, inDegrees: false).value
 
     let velocityX = cos(self.rotation.value) * speed

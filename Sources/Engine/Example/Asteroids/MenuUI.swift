@@ -1,15 +1,16 @@
 import CSDL3_ttf
+import Foundation
 
 class MenuUI: Renderable, Node {
   var relative: Bool = false
-  var id: UInt64
+  var id: UUID
   var children: [any Node]
   var parent: (any Node)?
 
   var font: OpaquePointer!
 
   required init() {
-    self.id = 1
+    self.id = UUID()
     self.children = []
 
     self.font = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
@@ -26,13 +27,13 @@ class MenuUI: Renderable, Node {
       text: "press any key to start", x: Float(center) - 200, y: 100, width: 400, height: 70)
   }
 
-  func update(delta: Float) {
+  func update(delta: Double) {
 
   }
 
   func input(keys: Keys.State, game: any Game) {
     if !keys.empty() {
-      game.changeScene(scene: PlayScene(id: 2, name: "PlayScene"))
+      game.changeScene(scene: PlayScene(id: UUID(), name: "PlayScene"))
     }
   }
 }

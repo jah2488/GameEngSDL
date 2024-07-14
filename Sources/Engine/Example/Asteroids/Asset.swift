@@ -4,7 +4,7 @@ import CSDL3_ttf
 import Foundation
 
 class Asset: Resource {
-  var id: UInt64
+  var id: UUID
   var type: ResourceType
   var path: String
   var texture: OpaquePointer!
@@ -16,7 +16,7 @@ class Asset: Resource {
   }
 
   init(path: String) {
-    self.id = 1
+    self.id = UUID()
     self.type = ResourceType.texture
     self.path = path
 

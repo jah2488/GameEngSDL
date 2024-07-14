@@ -1,10 +1,12 @@
+import Foundation
+
 class MenuScene: Scene {
 
-  var id: UInt64
+  var id: UUID
   var name: String
   var nodes: [Node]
 
-  init(id: UInt64, name: String) {
+  init(id: UUID, name: String) {
     self.id = id
     self.name = name
     self.nodes = [StarBackground(), MenuUI()]
@@ -34,7 +36,7 @@ class MenuScene: Scene {
     }
   }
 
-  func update(delta: Float) {
+  func update(delta: Double) {
     nodes.forEach { node in
       if let node = node as? Renderable {
         node.update(delta: delta)
