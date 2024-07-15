@@ -54,7 +54,7 @@ class Scene: Renderable {
         node._start(game: game)
       }
     } else {
-      print("Scene \(id) _start(:game) was called before loading has completed.")
+      log.log("Scene \(id) _start(:game) was called before loading has completed.")
     }
   }
 
@@ -68,7 +68,7 @@ class Scene: Renderable {
         node._draw(game: game)
       }
     } else {
-      // print("Scene \(id) _draw(:game) was called while it was unloaded.")
+      // log.log("Scene \(id) _draw(:game) was called while it was unloaded.")
     }
   }
   func draw(game: Game) {}
@@ -80,7 +80,7 @@ class Scene: Renderable {
         node._update(delta: delta)
       }
     } else {
-      // print("Scene \(id) _update(:delta) was called while it was unloaded.")
+      // log.log("Scene \(id) _update(:delta) was called while it was unloaded.")
     }
   }
   func update(delta: Double) {}
@@ -92,7 +92,7 @@ class Scene: Renderable {
         node._input(keys: keys, game: game)
       }
     } else {
-      // print("Scene \(id) _input(:keys, :game) was called while it was unloaded.")
+      // log.log("Scene \(id) _input(:keys, :game) was called while it was unloaded.")
     }
   }
   func input(keys: Keys.State, game: Game) {}

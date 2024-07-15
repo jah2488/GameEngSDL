@@ -5,7 +5,6 @@ class MenuUI: Entity {
   var font: OpaquePointer!
 
   required init() {
-    print("MenuUI init")
     super.init()
     self.font = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
   }
@@ -18,9 +17,9 @@ class MenuUI: Entity {
   }
 
   override func input(keys: Keys.State, game: Game) {
-    print("\(keys.empty()):\(keys.keys.map({ "\($0.key):\($0.value)" }))")
+    log.log("\(keys.empty()):\(keys.keys.map({ "\($0.key):\($0.value)" }))")
     if keys.isReleased(.space) {
-      print("MenuUI input detected, swapping to PlayScene")
+      log.log("MenuUI input detected, swapping to PlayScene")
       game.changeScene(PlayScene(name: "PlayScene"))
     }
   }

@@ -15,7 +15,7 @@ var __GAME_RENDERER: OpaquePointer!
 class Main {
 
   static func run() {
-    print("hello!")
+    log.log("hello!")
 
     let name = "Asteroids"
     let width: Int32 = 800
@@ -30,14 +30,14 @@ class Main {
 
     boot.run(game: game)
 
-    //print all availabile renderers
+    //log.log all availabile renderers
     // todo: decide if this is worth saving as a util somewhere.
     // for i in 0..<SDL_GetNumRenderDrivers() {
     // let driver = SDL_GetRenderDriver(i)
-    // print("Renderer \(i): \(String(cString: driver!))")
+    // log.log("Renderer \(i): \(String(cString: driver!))")
     // }
 
-    print("goodbye!")
+    log.log("goodbye!")
   }
 
 }

@@ -181,7 +181,7 @@ class Keys {
     case SDLK_RIGHTBRACE: return Key.rightbrace
     case SDLK_TILDE: return Key.tilde
     default:
-      print("Unknown key: \(sdlKey)")
+      log.log("Unknown key: \(sdlKey)")
       return Key.none
     }
   }

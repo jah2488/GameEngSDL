@@ -3,6 +3,8 @@ import CSDL3_image
 import CSDL3_ttf
 import Foundation
 
+let log = Logger(.error)
+
 class Boot {
   var name: String
   var width: Int32
@@ -42,23 +44,24 @@ class Boot {
   }
 
   deinit {
-    print("Deinit Boot")
+    log.log("Deinit Boot")
     TTF_Quit()
     IMG_Quit()
     SDL_Quit()
   }
 
   func run(game: Game) {
-    game._start()
     var now = SDL_GetPerformanceCounter()
     var delta: Double = 0
+    game._start()
+    log.start(time: Int(now))
     var keyStates = Keys.State()
     while game.isRunning {
-      print("--- [\(SDL_GetTicks())] ---")
       keyStates.resetReleased()
       let last = now
       now = SDL_GetPerformanceCounter()
       delta = Double((now - last) * 1000 / SDL_GetPerformanceFrequency()) * 0.001
+      log.loop(ticks: Int(SDL_GetTicks()), time: Int(now), delta: delta)
       var event = SDL_Event()
       while SDL_PollEvent(&event) != 0 {
         switch event.type {
@@ -77,7 +80,7 @@ class Boot {
         case SDL_EVENT_WINDOW_MOVED.rawValue:
           break
         case SDL_EVENT_WINDOW_RESIZED.rawValue:
-          print("window resized to \(event.window.data1), \(event.window.data2)")
+          log.log("window resized to \(event.window.data1), \(event.window.data2)")
           var rect = SDL_Rect(x: 0, y: 0, w: self.width, h: self.height)
           SDL_GetRenderViewport(renderer, &rect)
           game.width = Int(rect.w)
@@ -90,17 +93,22 @@ class Boot {
 
       //Send pressed data to game scenes and nodes
       if !keyStates.empty() {
-        print("calling input")
+        log.indent("_input")
         game._input(keys: keyStates)
+        log.dedent()
       }
 
+      log.indent("_update")
       game._update(delta: delta)
+      log.dedent()
 
       let c = game.clearColor
       SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a)
       SDL_RenderClear(renderer)
 
+      log.indent("_draw")
       game._draw()
+      log.dedent()
 
       SDL_RenderPresent(renderer)
     }

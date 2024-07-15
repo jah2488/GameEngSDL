@@ -25,12 +25,12 @@ class Asset: Resource {
     switch self.type {
     case .texture:
       guard let path = url?.absoluteString else {
-        print("Error loading asset: '\(self.path)' was not found.")
+        log.log("Error loading asset: '\(self.path)' was not found.")
         // Should this just crash?
         return
       }
       if __GAME_RENDERER == nil {
-        print("Renderer not initialized, how did you get here?")
+        log.log("Renderer not initialized, how did you get here?")
         return
       }
       out = IMG_LoadTexture(__GAME_RENDERER, asRelativePath(path))

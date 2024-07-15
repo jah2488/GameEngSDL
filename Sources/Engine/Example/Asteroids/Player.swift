@@ -16,7 +16,7 @@ class Player: Entity {
   override func start(game: Game) {
     self.position.x = Float(game.width) / 2
     self.position.y = Float(game.height) / 2
-    print("Player starting at \(self.position.x), \(self.position.y)")
+    log.log("Player starting at \(self.position.x), \(self.position.y)")
   }
 
   override func draw(game: Game) {
@@ -135,7 +135,7 @@ class Bullet: Entity {
     audioSpec.freq = 44100
     var audio_buf: UnsafeMutablePointer<Uint8>?
     var audio_len: Int32 = 0
-    print(String(cString: SDL_GetError()))
+    log.log(String(cString: SDL_GetError()))
     withUnsafeMutablePointer(to: &audio_len) { len in
       SDL_LoadWAV(
         "GameEngSDL_GameEngSDL.bundle/Assets/Laser_Shoot.wav", &audioSpec, &audio_buf, len)

@@ -13,11 +13,11 @@ class PlayScene: Scene {
   }
 
   override func load() {
-    print("Loading scene \(self.name)")
+    log.log("Loading scene \(self.name)")
   }
 
   override func unload() {
-    print("Unloading scene \(self.name)")
+    log.log("Unloading scene \(self.name)")
   }
 
 }

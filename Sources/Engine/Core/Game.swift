@@ -33,7 +33,7 @@ class Game {
   final func _start() {
     self.state = .running
     self.start()
-    print("Game _start()")
+    log.log("Game _start()")
     self.s.current()._load()
     self.s.current()._start(game: self)
   }
@@ -41,7 +41,7 @@ class Game {
   func start() {}
 
   final func _stop() {
-    print("Game _stop()")
+    log.log("Game _stop()")
     self.state = .stopped
     self.stop()
   }
@@ -78,13 +78,13 @@ class Game {
 
   var changeInProgress: Bool = false
   func changeScene(_ scene: Scene) {
-    print("----> Game change CurrentScene(to: \(scene.name))")
-    print("(Start:) Scenes: \(self.s.scenes.all().map { "\($0.name):\($0.isLoaded)" })")
+    log.log("----> Game change CurrentScene(to: \(scene.name))")
+    log.log("(Start:) Scenes: \(self.s.scenes.all().map { "\($0.name):\($0.isLoaded)" })")
     self.s.current()._unload()
     self.s.changeScene(scene)
     self.s.current()._load()
     self.s.current()._start(game: self)
-    print("(End:) Scenes: \(self.s.scenes.all().map { "\($0.name):\($0.isLoaded)" })")
+    log.log("(End:) Scenes: \(self.s.scenes.all().map { "\($0.name):\($0.isLoaded)" })")
   }
 }
 
