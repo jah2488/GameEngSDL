@@ -17,9 +17,7 @@ class MenuUI: Entity {
   }
 
   override func input(keys: Keys.State, game: Game) {
-    log.log("\(keys.empty()):\(keys.keys.map({ "\($0.key):\($0.value)" }))")
     if keys.isReleased(.space) {
-      log.log("MenuUI input detected, swapping to PlayScene")
       game.changeScene(PlayScene(name: "PlayScene"))
     }
   }

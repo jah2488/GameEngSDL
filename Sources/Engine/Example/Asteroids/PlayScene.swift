@@ -1,7 +1,6 @@
 import Foundation
 
 class PlayScene: Scene {
-
   override func start(game: Game) {
     addChild(StarBackground())
     addChild(Asteroid())
@@ -11,15 +10,6 @@ class PlayScene: Scene {
     addChild(Asteroid())
     addChild(Player())
   }
-
-  override func load() {
-    log.log("Loading scene \(self.name)")
-  }
-
-  override func unload() {
-    log.log("Unloading scene \(self.name)")
-  }
-
 }
 
 class Asteroid: Entity {
