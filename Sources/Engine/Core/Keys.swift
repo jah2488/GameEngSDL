@@ -28,6 +28,8 @@ class Keys {
     }
   }
   enum Key {
+    case leftshift
+    case rightshift
     case returnKey
     case escape
     case backspace
@@ -107,6 +109,8 @@ class Keys {
   }
   static func key(from sdlKey: UInt32) -> Key {
     switch sdlKey {
+    case SDLK_LSHIFT: return Key.leftshift
+    case SDLK_RSHIFT: return Key.rightshift
     case SDLK_RETURN: return Key.returnKey
     case SDLK_ESCAPE: return Key.escape
     case SDLK_BACKSPACE: return Key.backspace
