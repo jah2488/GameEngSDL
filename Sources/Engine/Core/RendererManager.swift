@@ -4,6 +4,7 @@ import CSDL3_ttf
 import Foundation
 import simd
 
+//TODO: Rename this class, bad name, not descriptive enough and weird to say.
 struct RendererManager {
   let renderer: OpaquePointer!
   func drawRect(

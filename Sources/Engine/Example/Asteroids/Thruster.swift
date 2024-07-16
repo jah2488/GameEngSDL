@@ -11,13 +11,4 @@ class Thruster: Entity {
     self.position.y = 34
     self.texture = Asset(path: "thrust.png")
   }
-
-  // override func draw(game: Game) {
-  //   game.r.drawTexture(
-  //     resource: thrust, x: Float(self.position.x + ship.position.x),
-  //     y: Float(self.position.y + ship.position.y),
-  //     width: 16, height: 16,
-  //     rotation: rotation.converted(to: UnitAngle.degrees).value,  //(self.rotation - Angle(-1.57079, inDegrees: false)).valueInDegrees,
-  //     tint: Color(r: 255, g: 255, b: 255, a: 255))
-  // }
 }
