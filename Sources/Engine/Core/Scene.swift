@@ -46,15 +46,16 @@ class Scene: Renderable {
   /// [Internal] Is the method that is called to draw the scene.
   /// Only called one time after ``load``
   final func _start(game: Game) {
-    if isLoaded && !hasStarted {
+    if !isLoaded {
+      _load()
+    }
+    if !hasStarted {
       hasStarted = true
       start(game: game)
 
       self.children.forEach { node in
         node._start(game: game)
       }
-    } else {
-      log.log("Scene \(id) _start(:game) was called before loading has completed.")
     }
   }
 
@@ -67,8 +68,6 @@ class Scene: Renderable {
       self.children.forEach { node in
         node._draw(game: game)
       }
-    } else {
-      // log.log("Scene \(id) _draw(:game) was called while it was unloaded.")
     }
   }
   func draw(game: Game) {}
@@ -79,8 +78,6 @@ class Scene: Renderable {
       self.children.forEach { node in
         node._update(delta: delta)
       }
-    } else {
-      // log.log("Scene \(id) _update(:delta) was called while it was unloaded.")
     }
   }
   func update(delta: Double) {}
@@ -91,8 +88,6 @@ class Scene: Renderable {
       self.children.forEach { node in
         node._input(keys: keys, game: game)
       }
-    } else {
-      // log.log("Scene \(id) _input(:keys, :game) was called while it was unloaded.")
     }
   }
   func input(keys: Keys.State, game: Game) {}

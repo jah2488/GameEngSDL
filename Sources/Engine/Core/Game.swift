@@ -78,13 +78,10 @@ class Game {
 
   var changeInProgress: Bool = false
   func changeScene(_ scene: Scene) {
-    log.log("----> Game change CurrentScene(to: \(scene.name))")
-    log.log("(Start:) Scenes: \(self.s.scenes.all().map { "\($0.name):\($0.isLoaded)" })")
     self.s.current()._unload()
     self.s.changeScene(scene)
     self.s.current()._load()
     self.s.current()._start(game: self)
-    log.log("(End:) Scenes: \(self.s.scenes.all().map { "\($0.name):\($0.isLoaded)" })")
   }
 }
 

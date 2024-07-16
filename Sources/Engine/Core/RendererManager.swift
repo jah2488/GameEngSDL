@@ -2,14 +2,22 @@ import CSDL3
 import CSDL3_image
 import CSDL3_ttf
 import Foundation
+import simd
 
 struct RendererManager {
   let renderer: OpaquePointer!
-  func drawRect(x: Float, y: Float, width: Float, height: Float) {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255)
+  func drawRect(
+    x: Float, y: Float, width: Float, height: Float,
+    tint: Color = Color(r: 255, g: 255, b: 255, a: 255),
+    filled: Bool = true
+  ) {
+    SDL_SetRenderDrawColor(renderer, tint.r, tint.g, tint.b, tint.a)
     var rect = SDL_FRect(x: x, y: y, w: width, h: height)
-    SDL_RenderFillRect(renderer, &rect)
-    // SDL_RenderRect(renderer, &rect)
+    if filled {
+      SDL_RenderFillRect(renderer, &rect)
+    } else {
+      SDL_RenderRect(renderer, &rect)
+    }
   }
 
   func drawBackground(resource: any Resource, offsetX: Float, offsetY: Float) {
@@ -20,6 +28,7 @@ struct RendererManager {
 
   func drawTexture(
     resource: any Resource, x: Float, y: Float, width: Float, height: Float, rotation: Double,
+    origin: simd_float2? = nil,
     tint: Color
   ) {
     //TODO: Clean up this API, as I can already see this getting horribly overloaded with options.
@@ -29,7 +38,10 @@ struct RendererManager {
     let _ = withUnsafePointer(to: SDL_FRect(x: x, y: y, w: width, h: height)) { rect in
       SDL_SetTextureColorMod(text, tint.r, tint.g, tint.b)
       //TODO: If I want to be able to rotate children that are relatively positioned, I need to be able to get their parent's rect from here. I need a better abstraction layer.
-      SDL_RenderTextureRotated(renderer, text, nil, rect, rotation, nil, SDL_FLIP_NONE)
+      var oPoint = SDL_FPoint(x: origin?.x ?? width / 2, y: origin?.y ?? height / 2)
+
+      SDL_RenderTextureRotated(
+        renderer, text, nil, rect, rotation, &oPoint, SDL_FLIP_NONE)
     }
   }
 

@@ -2,7 +2,6 @@ import CSDL3
 import Foundation
 
 class Bullet: Entity {
-  var bullet = Asset(path: "bullet.png")
   var lifetime: Double = 4.1
   var createdAt: Double = 0
 
@@ -10,6 +9,7 @@ class Bullet: Entity {
     super.init()
     self.relative = false
     self.createdAt = Date().timeIntervalSince1970
+    self.texture = Asset(path: "bullet.png")
   }
 
   override func start(game: Game) {
@@ -20,7 +20,6 @@ class Bullet: Entity {
     audioSpec.freq = 44100
     var audio_buf: UnsafeMutablePointer<Uint8>?
     var audio_len: Int32 = 0
-    log.log(String(cString: SDL_GetError()))
     withUnsafeMutablePointer(to: &audio_len) { len in
       SDL_LoadWAV(
         "GameEngSDL_GameEngSDL.bundle/Assets/Laser_Shoot.wav", &audioSpec, &audio_buf, len)
@@ -34,14 +33,6 @@ class Bullet: Entity {
     /* calculate a little more audio into `buf`, add it to `stream` */
     SDL_PutAudioStreamData(audio, audio_buf, audio_len)
 
-  }
-
-  override func draw(game: Game) {
-    game.r.drawTexture(
-      resource: bullet,
-      x: Float(self.position.x), y: Float(self.position.y), width: 32, height: 32,
-      rotation: (rotation.converted(to: .degrees).value - 90),  //(self.rotation - Angle(-1.57079, inDegrees: false)).valueInDegrees,
-      tint: Color.init(r: 255, g: 255, b: 255, a: 255))
   }
 
   let speed: Double = 800  // Speed of the bullet in units per second
@@ -65,7 +56,7 @@ class Bullet: Entity {
     var _ = self.parent?.parent?.children.forEach { child in
       if let child = child as? Asteroid {
         let pos = child.position
-        let size = child.width
+        let size = child.size.x
         var rect2 = SDL_Rect(x: Int32(pos.x), y: Int32(pos.y), w: Int32(size), h: Int32(size))
         if SDL_HasRectIntersection(&rect, &rect2) == SDL_TRUE {
           self.parent?.children.removeAll { $0 as? Bullet === self }

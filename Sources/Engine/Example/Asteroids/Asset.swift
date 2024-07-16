@@ -8,6 +8,8 @@ class Asset: Resource {
   var type: ResourceType
   var path: String
   var texture: OpaquePointer!
+  var width: Float
+  var height: Float
   var name: String {
     return String(String(path.split(separator: "/").last!).split(separator: ".").first!)
   }
@@ -19,6 +21,8 @@ class Asset: Resource {
     self.id = UUID()
     self.type = ResourceType.texture
     self.path = path
+    self.width = 0
+    self.height = 0
 
     let url = Bundle.module.url(forResource: "Assets/\(self.name)", withExtension: self.ext)
     var out: OpaquePointer!
@@ -34,6 +38,7 @@ class Asset: Resource {
         return
       }
       out = IMG_LoadTexture(__GAME_RENDERER, asRelativePath(path))
+      SDL_GetTextureSize(out, &self.width, &self.height)
       break
     case .font:
       break

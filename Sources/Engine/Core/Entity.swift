@@ -34,6 +34,16 @@ struct Transform2D: Hashable, Equatable {
   init() {
     self.origin = simd_float2(0, 0)
   }
+
+  func rotated(by: Measurement<UnitAngle>) -> Transform2D {
+    var new = Transform2D(from: self)
+    let angle = by.converted(to: .radians).value
+    let c = Float(cos(angle))
+    let s = Float(sin(angle))
+    new.x = simd_float2(x.x * c - x.y * s, x.x * s + x.y * c)
+    new.y = simd_float2(y.x * c - y.y * s, y.x * s + y.y * c)
+    return new
+  }
 }
 
 /// A base class for all visible entities in the game.
@@ -67,6 +77,9 @@ class Entity: Renderable {
 
   /// The scale of the entity.
   var scale: simd_float2 = simd_float2(1, 1)
+
+  /// The texture of the entity.
+  var texture: Asset?
 
   /// If the entity should be flipped horizontally.
   var flipX: Bool = false
@@ -153,10 +166,45 @@ class Entity: Renderable {
     }
   }
 
+  var worldPosition: simd_float2 {
+    if relative && parent != nil {
+      return self.position + parent!.worldPosition
+    } else {
+      return self.position
+    }
+  }
+
+  var worldRotation: Measurement<UnitAngle> {
+    if relative && parent != nil {
+      return self.rotation + parent!.worldRotation
+    } else {
+      return self.rotation
+    }
+  }
+
   /// Called when the entity should be drawn (at most once a frame)
   /// Always called after ``update``
   /// - Parameter game: A reference to the main game object
-  func draw(game: Game) {}
+  func draw(game: Game) {
+    if self.texture != nil {
+      let width = self.size.x == 0 ? texture!.width : self.size.x
+      let height = self.size.y == 0 ? texture!.height : self.size.y
+      game.r.drawTexture(
+        resource: self.texture!, x: worldPosition.x, y: worldPosition.y,
+        width: width, height: height,
+        rotation: worldRotation.converted(to: .degrees).value,
+        origin: self.origin,
+        tint: self.tint)
+    } else {
+      if self.size.x == 0 || self.size.y == 0 {
+        return
+      }
+      //TODO: This should always draw a texture, so scale/rotation/skew can still be applied
+      game.r.drawRect(
+        x: worldPosition.x, y: worldPosition.y, width: Float(self.size.x),
+        height: Float(self.size.y), tint: self.tint)
+    }
+  }
 
   /// [Internal] Is the method that is called from the main gameloop to update the entity.
   /// Always calls ``update`` before updating children.
