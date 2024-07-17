@@ -5,6 +5,9 @@ class Bullet: Entity {
   var lifetime: Double = 4.1
   var createdAt: Double = 0
 
+  let fireSound = Sound(path: "Laser_Shoot.wav")
+  var chunkID: Int?
+
   required init() {
     super.init()
     self.relative = false
@@ -13,26 +16,8 @@ class Bullet: Entity {
   }
 
   override func start(game: Game) {
-    // TODO: None of this resource loading should be happening here in object creation. Only the playing of the audio.
-    var audioSpec = SDL_AudioSpec()
-    audioSpec.format = UInt16(SDL_AUDIO_F32)
-    audioSpec.channels = 2
-    audioSpec.freq = 44100
-    var audio_buf: UnsafeMutablePointer<Uint8>?
-    var audio_len: Int32 = 0
-    withUnsafeMutablePointer(to: &audio_len) { len in
-      SDL_LoadWAV(
-        "GameEngSDL_GameEngSDL.bundle/Assets/Laser_Shoot.wav", &audioSpec, &audio_buf, len)
-    }
-    var audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audioSpec, nil, nil)
-    var devid = SDL_GetCurrentAudioDriver()
-    var audioDevice = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audioSpec)
-    SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(audio))
-
-    /* ...in your main loop... */
-    /* calculate a little more audio into `buf`, add it to `stream` */
-    SDL_PutAudioStreamData(audio, audio_buf, audio_len)
-
+    self.chunkID = game.a.load(fireSound.url)
+    game.a.play(chunkID!, .soundfx)
   }
 
   let speed: Double = 800  // Speed of the bullet in units per second

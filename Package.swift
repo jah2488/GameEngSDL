@@ -11,9 +11,10 @@ let package = Package(
     .systemLibrary(name: "CSDL3", pkgConfig: "sdl3"),
     .systemLibrary(name: "CSDL3_image", pkgConfig: "sdl3-image"),
     .systemLibrary(name: "CSDL3_ttf", pkgConfig: "sdl3-ttf"),
+    .systemLibrary(name: "CSDL3_mixer", pkgConfig: "sdl3-mixer"),
     .executableTarget(
       name: "GameEngSDL",
-      dependencies: ["CSDL3", "CSDL3_image", "CSDL3_ttf"],
+      dependencies: ["CSDL3", "CSDL3_image", "CSDL3_ttf", "CSDL3_mixer"],
       path: "./Sources/Engine",
       resources: [
         .copy("Assets/")

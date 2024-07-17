@@ -20,6 +20,10 @@ class Game {
   /// Helper property to access the Renderer Manager
   var r: RendererManager
 
+  /// Heloper property to access the Audio System
+  var a: Audio
+
+  /// The color to clear the screen with each frame.
   var clearColor: Color = Color(r: 0, g: 0, b: 0, a: 255)
 
   init(rendererPointer: OpaquePointer, name: String = "Game", width: Int = 800, height: Int = 600) {
@@ -28,6 +32,7 @@ class Game {
     self.name = name
     self.s = SceneManager.empty
     self.r = RendererManager(renderer: rendererPointer)
+    self.a = Audio()
   }
 
   final func _start() {

@@ -1,5 +1,6 @@
 import CSDL3
 import CSDL3_image
+import CSDL3_mixer
 import CSDL3_ttf
 import Foundation
 
@@ -20,9 +21,24 @@ class Boot {
     self.width = _width
     self.height = _height
 
-    SDL_Init(UInt32(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO))
+    SDL_Init(UInt32(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     IMG_Init(Int32(IMG_INIT_PNG.rawValue))
     TTF_Init()
+    Mix_Init(Int32(MIX_INIT_MP3.rawValue))
+
+    var spec = SDL_AudioSpec()
+    spec.freq = 44100
+    spec.channels = 2
+    spec.format = UInt16(MIX_DEFAULT_FORMAT)
+    Mix_OpenAudio(1, &spec)
+    if Mix_OpenAudio(0, &spec) < 0 {
+      fatalError("Failed to open audio: \(String(cString: SDL_GetError()))")
+    } else {
+      Mix_QuerySpec(&spec.freq, &spec.format, &spec.channels)
+      log.log(
+        "Opened audio at \(spec.freq) Hz \(spec.format&0xFF) bit \((spec.channels > 2) ? "surround" : (spec.channels > 1) ? "stereo" : "mono"))"
+      )
+    }
 
     let _ = SDL_GetDesktopDisplayMode(SDL_GetPrimaryDisplay())
 
@@ -33,6 +49,9 @@ class Boot {
     SDL_GetWindowSizeInPixels(window, &width, &height)
     var rect = SDL_Rect(x: 0, y: 0, w: width, h: height)
     SDL_GetRenderViewport(renderer, &rect)
+
+    SDL_SetRenderLogicalPresentation(
+      renderer, 800, 600, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, SDL_SCALEMODE_NEAREST)
     width = Int32(rect.w)
     height = Int32(rect.h)
 
@@ -44,7 +63,9 @@ class Boot {
   }
 
   deinit {
+    Mix_CloseAudio()
     log.log("Deinit Boot")
+    Mix_Quit()
     TTF_Quit()
     IMG_Quit()
     SDL_Quit()
