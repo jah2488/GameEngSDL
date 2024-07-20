@@ -78,9 +78,9 @@ class Logger {
     let frameRate = (1 / delta).rounded()
 
     if logLevel == .info {
-      log("")
+      print("\u{001B}[2J")
       log(
-        "--- [Frame #\(loops)][\((frameRate))fps][\(ticks)ms] (avg fps: \(pt.averageFrameRate()) | recent avg:\(pt.averageFrameRateOverInterval()) ---",
+        "--- [Frame #\(loops)][\((frameRate))fps][\("\(ticks)".colorize(.green))ms] (avg fps: \(pt.averageFrameRate())) | recent avg:\(pt.averageFrameRateOverInterval()) ---",
         indent: false
       )
     }
@@ -100,13 +100,13 @@ class Logger {
 
   func logIndentStart(_ name: String) {
     if logLevel == .info {
-      log("--- \(name) {")
+      // log("--- \(name) {")
     }
   }
 
   func logIndentEnd(_ name: String) {
     if logLevel == .info {
-      log("--- } \(name)")
+      // log("--- } \(name)")
     }
   }
 
