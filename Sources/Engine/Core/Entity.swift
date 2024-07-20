@@ -81,6 +81,10 @@ class Entity: Renderable {
   /// The texture of the entity.
   var texture: Asset?
 
+  var debugTexture = Asset(path: "bounds-debug.png")
+  var debugTint = Color(r: 0, g: 255, b: 0, a: 100)
+  var debugTintCollision = Color(r: 255, g: 0, b: 0, a: 100)
+
   /// If the entity should be flipped horizontally.
   var flipX: Bool = false
 
@@ -107,6 +111,14 @@ class Entity: Renderable {
 
   /// The origin location of the entity. This defaults to the center of the entity. This determins the point around which the entity is rotated and scaled.
   var originLocation = OriginLocation.center
+
+  var debugRender: Bool = true
+
+  /// Bounds of the entity.
+  var bounds: Rect<Float> {
+    return Rect(
+      x: Float(position.x), y: Float(position.y), width: Float(size.x), height: Float(size.y))
+  }
 
   /// The origin of the entity. This determins the point around which the entity is rotated and scaled.
   var origin: simd_float2 {
@@ -163,6 +175,22 @@ class Entity: Renderable {
       if child.shouldDraw {
         child._draw(game: game)
       }
+    }
+    if debugRender {
+      var color = debugTint
+      if isOverlapping {
+        color = debugTintCollision
+      }
+      game.r.drawTexture(
+        resource: debugTexture,
+        x: worldPosition.x - 1,
+        y: worldPosition.y - 1,
+        width: Float(self.size.x) + 1,
+        height: Float(self.size.y) + 1,
+        rotation: worldRotation.converted(to: .degrees).value,
+        origin: self.origin,
+        tint: color
+      )
     }
   }
 
@@ -255,4 +283,13 @@ class Entity: Renderable {
   /// Called when the entity should be destroyed.
   /// Always called after `draw` and `update` and only on entities where ``alive`` is false.
   func destroy() {}
+
+  var isOverlapping: Bool = false
+  func onCollisionStart(with: Entity) {
+    isOverlapping = true
+  }
+
+  func onCollisionEnd(with: Entity) {
+    isOverlapping = false
+  }
 }
