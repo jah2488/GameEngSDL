@@ -1,5 +1,6 @@
 import CSDL3
 import Foundation
+import simd
 
 class Bullet: Entity {
   var lifetime: Double = 4.1
@@ -13,6 +14,8 @@ class Bullet: Entity {
     self.relative = false
     self.createdAt = Date().timeIntervalSince1970
     self.texture = Asset(path: "bullet.png")
+
+    self.size = simd_float2(16, 16)
   }
 
   override func start(game: Game) {
@@ -36,18 +39,5 @@ class Bullet: Entity {
     // Delta is the time elapsed since the last frame, so multiplying by delta makes the movement frame-rate independent
     self.position.x += Float(velocityX) * Float(delta)
     self.position.y += Float(velocityY) * Float(delta)
-
-    var rect = SDL_Rect(x: Int32(self.position.x), y: Int32(self.position.y), w: 32, h: 32)
-    var _ = self.parent?.parent?.children.forEach { child in
-      if let child = child as? Asteroid {
-        let pos = child.position
-        let size = child.size.x
-        var rect2 = SDL_Rect(x: Int32(pos.x), y: Int32(pos.y), w: Int32(size), h: Int32(size))
-        if SDL_HasRectIntersection(&rect, &rect2) == SDL_TRUE {
-          self.parent?.children.removeAll { $0 as? Bullet === self }
-          child.parent?.children.removeAll { $0 as? Asteroid === child }
-        }
-      }
-    }
   }
 }

@@ -1,3 +1,7 @@
+struct World {
+  var entities: [Entity] = []
+}
+
 class Game {
   /// The width of the viewport of the game in pixels.
   var width: Int
@@ -20,8 +24,13 @@ class Game {
   /// Helper property to access the Renderer Manager
   var r: RendererManager
 
-  /// Heloper property to access the Audio System
+  /// Helper property to access the Audio System
   var a: Audio
+
+  /// Private Helper property to access the state of the world
+  var w: World
+
+  var e: EventQueue
 
   /// The color to clear the screen with each frame.
   var clearColor: Color = Color(r: 0, g: 0, b: 0, a: 255)
@@ -33,6 +42,8 @@ class Game {
     self.s = SceneManager.empty
     self.r = RendererManager(renderer: rendererPointer)
     self.a = Audio()
+    self.w = World()
+    self.e = EventQueue()
   }
 
   final func _start() {
@@ -61,11 +72,29 @@ class Game {
   func draw() {}
 
   final func _update(delta: Double) {
+    self.calculateCollisions()
     self.update(delta: delta)
     self.s.current()._update(delta: delta)
   }
 
   func update(delta: Double) {}
+
+  func calculateCollisions() {
+    let entities = self.w.entities
+    for i in 0..<entities.count {
+      for j in i + 1..<entities.count {
+        let a = entities[i]
+        let b = entities[j]
+        if a.bounds.overlaps(with: b.bounds) {
+          a.onCollisionStart(with: b)
+          b.onCollisionStart(with: a)
+        } else {
+          a.onCollisionEnd(with: b)
+          b.onCollisionEnd(with: a)
+        }
+      }
+    }
+  }
 
   final func _input(keys: Keys.State) {
     self.input(keys: keys)
@@ -90,11 +119,23 @@ class Game {
   }
 }
 
-struct Rect<T> {
+struct Rect<T: Numeric & Comparable> {
   var x: T
   var y: T
   var width: T
   var height: T
+  // Convenience properties for readability
+  var left: T { return x }
+  var right: T { return x + width }
+  var top: T { return y }
+  var bottom: T { return y + height }
+
+  // Method to check overlap with another rectangle
+  @inlinable
+  func overlaps(with other: Rect) -> Bool {
+    return
+      !(left >= other.right || right <= other.left || top >= other.bottom || bottom <= other.top)
+  }
 }
 
 class SceneManager {

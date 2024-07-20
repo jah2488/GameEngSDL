@@ -13,12 +13,13 @@ class Scene: Renderable {
   /// The parent scene of this scene.
   var parent: (Scene)?
 
-  var children: [Entity] = []
+  var children: [Entity]
 
   var isLoaded: Bool = false
 
   init(name: String, autoLoad: Bool = true) {
     self.name = name
+    self.children = []
     if autoLoad {
       _load()
     }
@@ -96,7 +97,7 @@ class Scene: Renderable {
     self.children.forEach { node in
       node._destroy()
     }
-    self.children = []
+    self.children.removeAll(where: { $0.id == $0.id })
     self._unload()
   }
 

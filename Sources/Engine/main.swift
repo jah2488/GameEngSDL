@@ -15,11 +15,10 @@ var __GAME_RENDERER: OpaquePointer!
 class Main {
 
   static func run() {
-    log.log("hello!")
 
     let name = "Asteroids"
-    let width: Int32 = 800
-    let height: Int32 = 600
+    let width: Int32 = 480 * 4
+    let height: Int32 = 270 * 4
 
     let boot = Boot(_name: name, _width: width, _height: height)
 
