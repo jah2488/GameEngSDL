@@ -51,15 +51,22 @@ class Boot {
     SDL_GetRenderViewport(renderer, &rect)
 
     SDL_SetRenderLogicalPresentation(
-      renderer, 800, 600, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE, SDL_SCALEMODE_NEAREST)
-    width = Int32(rect.w)
-    height = Int32(rect.h)
+      renderer, _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH, SDL_SCALEMODE_NEAREST)
+    // width = Int32(rect.w)
+    // height = Int32(rect.h)
+
+    print("Window size: \(width)x\(height)")
+    print("Logical size: \(_width)x\(_height)")
+    print("Renderer size: \(rect.w)x\(rect.h)")
 
     let icon = IMG_Load("GameEngSDL_GameEngSDL.bundle/Assets/icon.png")
     SDL_SetWindowIcon(window, icon)
     SDL_DestroySurface(icon)
 
     SDL_SetRenderScale(renderer, 1, 1)
+
+    self.width = _width
+    self.height = _height
   }
 
   deinit {
@@ -72,6 +79,14 @@ class Boot {
   }
 
   func run(game: Game) {
+    var logical_presentation_index = 0
+    var presentations = [
+      SDL_LOGICAL_PRESENTATION_DISABLED,
+      SDL_LOGICAL_PRESENTATION_STRETCH,
+      SDL_LOGICAL_PRESENTATION_LETTERBOX,
+      SDL_LOGICAL_PRESENTATION_OVERSCAN,
+      SDL_LOGICAL_PRESENTATION_INTEGER_SCALE,
+    ]
     var now = SDL_GetPerformanceCounter()
     var delta: Double = 0
     game._start()
@@ -91,6 +106,19 @@ class Boot {
           break
         case SDL_EVENT_KEY_UP.rawValue:
           keyStates.keys[Keys.key(from: event.key.key)] = .released
+
+          if event.key.key == SDLK_ESCAPE {
+
+            SDL_SetRenderLogicalPresentation(
+              renderer, self.width, self.height, presentations[logical_presentation_index],
+              SDL_SCALEMODE_NEAREST)
+            print("Logical Presentation: \(logical_presentation_index)")
+            if logical_presentation_index == presentations.count - 1 {
+              logical_presentation_index = 0
+            } else {
+              logical_presentation_index += 1
+            }
+          }
           break
         case SDL_EVENT_WINDOW_DESTROYED.rawValue:
           game._stop()
