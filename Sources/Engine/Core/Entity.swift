@@ -269,20 +269,29 @@ class Entity: Renderable {
   ///   - game: A reference to the main game object
   func input(keys: Keys.State, game: Game) {}
 
-  /// [Internal] Is the method that is called from the main gameloop to destroy the entity.
+  /// [Internal] Is the method that is called when its time to destroy the entity.
   /// Always calls ``destroy`` before destroying children.
   func _destroy() {
     destroy()
     self.children.forEach { child in
-      if child.shouldDestroy {
-        child._destroy()
-      }
+      child._destroy()
     }
   }
 
   /// Called when the entity should be destroyed.
   /// Always called after `draw` and `update` and only on entities where ``alive`` is false.
   func destroy() {}
+
+  /// [Internal] Is the method that is called from the main gameloop to clean up the entity.
+  func _cleanup() {
+    self.children.removeAll { $0.shouldDestroy }
+    self.children.forEach { child in
+      child._cleanup()
+    }
+    if shouldDestroy {
+      _destroy()
+    }
+  }
 
   var isOverlapping: Bool = false
   func onCollisionStart(with: Entity) {

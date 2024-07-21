@@ -110,6 +110,10 @@ class Game {
 
   func destroy() {}
 
+  func _cleanup() {
+    self.s.current()._cleanup()
+  }
+
   var changeInProgress: Bool = false
   func changeScene(_ scene: Scene) {
     self.s.current()._unload()

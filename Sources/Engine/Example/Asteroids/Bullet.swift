@@ -28,7 +28,8 @@ class Bullet: Entity {
     let age = Date().timeIntervalSince1970 - self.createdAt
     if age > self.lifetime {
       // TODO: This functionality should be encapsulated in a helper
-      self.parent?.children.removeAll { $0 as? Bullet === self }
+      // self.parent?.children.removeAll { $0 as? Bullet === self }
+      self.alive = false
       return
     }
 

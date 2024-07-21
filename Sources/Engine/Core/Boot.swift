@@ -80,7 +80,7 @@ class Boot {
 
   func run(game: Game) {
     var logical_presentation_index = 0
-    var presentations = [
+    let presentations = [
       SDL_LOGICAL_PRESENTATION_DISABLED,
       SDL_LOGICAL_PRESENTATION_STRETCH,
       SDL_LOGICAL_PRESENTATION_LETTERBOX,
@@ -160,6 +160,7 @@ class Boot {
       log.dedent()
 
       SDL_RenderPresent(renderer)
+      game._cleanup()
     }
   }
 }

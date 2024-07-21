@@ -103,6 +103,12 @@ class Scene: Renderable {
 
   func destroy() {}
 
+  func _cleanup() {
+    self.children.forEach { node in
+      node._cleanup()
+    }
+  }
+
   //Adds a child to the scene
   final func addChild(_ child: Entity) {
     self.children.append(child)
