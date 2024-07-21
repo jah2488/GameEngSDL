@@ -29,10 +29,13 @@ class Audio {
   }
 
   func load(_ path: String) -> Int {
+    let hash = path.hash
+    if chunks[hash] != nil {
+      return hash
+    }
     guard let chunk = Mix_LoadWAV(path) else {
       fatalError("Failed to load audio: \(String(cString: SDL_GetError()))")
     }
-    let hash = path.hash
     chunks[hash] = chunk
     return hash
   }
