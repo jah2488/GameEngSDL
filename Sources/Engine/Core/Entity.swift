@@ -301,4 +301,9 @@ class Entity: Renderable {
   func onCollisionEnd(with: Entity) {
     isOverlapping = false
   }
+
+  func allocationSize() -> Int {
+    // return malloc_size(Unmanaged.passUnretained(self).toOpaque())
+    return class_getInstanceSize(type(of: self)) + children.reduce(0, { $0 + $1.allocationSize() })
+  }
 }
