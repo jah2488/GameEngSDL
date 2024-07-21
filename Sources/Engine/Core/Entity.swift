@@ -237,11 +237,6 @@ class Entity: Renderable {
   /// [Internal] Is the method that is called from the main gameloop to update the entity.
   /// Always calls ``update`` before updating children.
   func _update(delta: Double) {
-    if shouldDestroy {
-      _destroy()
-      return
-    }
-
     update(delta: delta)
     self.children.forEach { child in
       if child.shouldUpdate {
