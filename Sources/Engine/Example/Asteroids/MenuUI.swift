@@ -17,7 +17,7 @@ class MenuUI: Entity {
   }
 
   override func input(keys: Keys.State, game: Game) {
-    if keys.isReleased(.space) {
+    if keys.isReleased(.space) || keys.isReleased(.startBtn) {
       game.changeScene(PlayScene(name: "PlayScene"))
     }
   }

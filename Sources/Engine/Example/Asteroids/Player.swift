@@ -64,23 +64,23 @@ class Player: Entity {
 
   override func input(keys: Keys.State, game: Game) {
     //todo replace direct key access with keymaps
-    if keys.isPressed(.w) {
+    if keys.isPressed(.w) || keys.isPressed(.dpadUpBtn) {
       thrust -= 50
     }
 
-    if keys.isPressed(.s) {
+    if keys.isPressed(.s) || keys.isPressed(.dpadDownBtn) {
       thrust += 50
     }
 
-    if keys.isPressed(.a) {
+    if keys.isPressed(.a) || keys.isPressed(.dpadLeftBtn) || keys.isPressed(.leftShoulderBtn) {
       rotationSpeed -= 1
     }
 
-    if keys.isPressed(.d) {
+    if keys.isPressed(.d) || keys.isPressed(.dpadRightBtn) || keys.isPressed(.rightShoulderBtn) {
       rotationSpeed += 1
     }
 
-    if keys.isReleased(.space) {
+    if keys.isReleased(.space) || keys.isReleased(.southBtn) {
       fire(game: game)
     }
 

@@ -26,6 +26,21 @@ class Boot {
     TTF_Init()
     Mix_Init(Int32(MIX_INIT_MP3.rawValue))
 
+    var count: Int32 = 0
+    SDL_GetGamepads(&count)
+    var gamepad: OpaquePointer!
+    for i: UInt32 in UInt32(0)..<(UInt32(10)) {
+      gamepad = SDL_OpenGamepad(UInt32(i))
+      if gamepad != nil {
+        break
+      }
+    }
+    if SDL_GamepadConnected(gamepad) == SDL_TRUE {
+      log.log("Gamepad connected")
+    } else {
+      log.log("No Gamepad connected")
+    }
+
     var spec = SDL_AudioSpec()
     spec.freq = 44100
     spec.channels = 2
@@ -104,6 +119,18 @@ class Boot {
       var event = SDL_Event()
       while SDL_PollEvent(&event) != 0 {
         switch event.type {
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN.rawValue:
+          keyStates.keys[Keys.button(from: SDL_GamepadButton.init(Int32(event.gbutton.button)))] =
+            .down
+          break
+        case SDL_EVENT_GAMEPAD_BUTTON_UP.rawValue:
+          keyStates.keys[Keys.button(from: SDL_GamepadButton.init(Int32(event.gbutton.button)))] =
+            .released
+          break
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION.rawValue:
+          keyStates.keys[Keys.axis(from: SDL_GamepadAxis.init(Int32(event.gaxis.axis)))] = .at(
+            event.gaxis.value)
+          break
         case SDL_EVENT_KEY_DOWN.rawValue:
           keyStates.keys[Keys.key(from: event.key.key)] = .down
           break
