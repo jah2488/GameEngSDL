@@ -72,6 +72,8 @@ class Entity: Renderable {
   /// The velocity of the entity in 2d space.
   var velocity: simd_float2 = simd_float2(0, 0)
 
+  var mass: Float = 1
+
   /// The rotation of the entity in radians.
   var rotation: Measurement<UnitAngle> = Measurement(value: 0, unit: .radians)
 
@@ -80,6 +82,9 @@ class Entity: Renderable {
 
   /// The texture of the entity.
   var texture: Asset?
+
+  /// The animated sprite of the entity.
+  var sprite: Sprite?
 
   var debugTexture = Asset(path: "bounds-debug.png")
   var debugTint = Color(r: 0, g: 255, b: 0, a: 100)
@@ -112,7 +117,7 @@ class Entity: Renderable {
   /// The origin location of the entity. This defaults to the center of the entity. This determins the point around which the entity is rotated and scaled.
   var originLocation = OriginLocation.center
 
-  var debugRender: Bool = true
+  var debugRender: Bool = false
 
   /// Bounds of the entity.
   var bounds: Rect<Float> {
@@ -155,7 +160,13 @@ class Entity: Renderable {
     return !alive
   }
 
-  required init() {}
+  required init() {
+    World.shared.add(self)
+  }
+
+  deinit {
+    World.shared.remove(self)
+  }
 
   func _start(game: Game) {
     start(game: game)
@@ -214,7 +225,16 @@ class Entity: Renderable {
   /// Always called after ``update``
   /// - Parameter game: A reference to the main game object
   func draw(game: Game) {
-    if self.texture != nil {
+    if self.sprite != nil {
+      game.r.drawTextureAnimated(
+        resource: self.sprite!.texture, x: worldPosition.x, y: worldPosition.y,
+        width: Int(self.size.x), height: Int(self.size.y),
+        frame: self.sprite!.frame, totalFrames: self.sprite!.totalFrames,
+        rotation: worldRotation.converted(to: .degrees).value,
+        origin: self.origin,
+        tint: self.tint
+      )
+    } else if self.texture != nil {
       let width = self.size.x == 0 ? texture!.width : self.size.x
       let height = self.size.y == 0 ? texture!.height : self.size.y
       game.r.drawTexture(
@@ -238,6 +258,7 @@ class Entity: Renderable {
   /// Always calls ``update`` before updating children.
   func _update(delta: Double) {
     update(delta: delta)
+    self.sprite?.update(delta: delta)
     self.children.forEach { child in
       if child.shouldUpdate {
         child._update(delta: delta)
@@ -267,10 +288,15 @@ class Entity: Renderable {
   /// [Internal] Is the method that is called when its time to destroy the entity.
   /// Always calls ``destroy`` before destroying children.
   func _destroy() {
+    World.shared.remove(self)
     destroy()
     self.children.forEach { child in
       child._destroy()
     }
+
+    //TODO: This feels hacky
+    self.parent?.children.removeAll { $0.id == self.id }
+    self.scene?.children.removeAll { $0.id == self.id }
   }
 
   /// Called when the entity should be destroyed.
@@ -289,13 +315,17 @@ class Entity: Renderable {
   }
 
   var isOverlapping: Bool = false
-  func onCollisionStart(with: Entity) {
+  func _onCollisionStart(with: Entity) {
     isOverlapping = true
+    onCollisionStart(with: with)
   }
+  func onCollisionStart(with: Entity) {}
 
-  func onCollisionEnd(with: Entity) {
+  func _onCollisionEnd(with: Entity) {
     isOverlapping = false
+    onCollisionEnd(with: with)
   }
+  func onCollisionEnd(with: Entity) {}
 
   func allocationSize() -> Int {
     // return malloc_size(Unmanaged.passUnretained(self).toOpaque())

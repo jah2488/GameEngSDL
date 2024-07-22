@@ -27,6 +27,25 @@ struct RendererManager {
     SDL_RenderTexture(renderer, text, nil, nil)
   }
 
+  func drawTextureAnimated(
+    resource: Asset, x: Float, y: Float, width: Int, height: Int,
+    frame: Int, totalFrames: Int, rotation: Double,
+    origin: simd_float2? = nil, tint: Color
+  ) {
+    let frameWidth = resource.width / Float(totalFrames)
+    let text = resource.texture
+    SDL_SetTextureScaleMode(text, SDL_SCALEMODE_NEAREST)
+    let _ = withUnsafePointer(to: SDL_FRect(x: x, y: y, w: Float(width), h: Float(height))) {
+      rect in
+      SDL_SetTextureColorMod(text, tint.r, tint.g, tint.b)
+      var frameRect = SDL_FRect(
+        x: Float(frame) * frameWidth, y: 0, w: frameWidth, h: resource.height)
+      var oPoint = SDL_FPoint(x: origin?.x ?? Float(width) / 2, y: origin?.y ?? Float(height) / 2)
+      SDL_RenderTextureRotated(
+        renderer, text, &frameRect, rect, rotation, &oPoint, SDL_FLIP_NONE)
+    }
+  }
+
   func drawTexture(
     resource: any Resource, x: Float, y: Float, width: Float, height: Float, rotation: Double,
     origin: simd_float2? = nil,

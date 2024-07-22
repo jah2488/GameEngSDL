@@ -17,8 +17,8 @@ class Main {
   static func run() {
 
     let name = "Asteroids"
-    let width: Int32 = 480 * 4
-    let height: Int32 = 270 * 4
+    let width: Int32 = 480 * 2
+    let height: Int32 = 270 * 2
 
     let boot = Boot(_name: name, _width: width, _height: height)
 

@@ -55,6 +55,9 @@ class Boot {
     // width = Int32(rect.w)
     // height = Int32(rect.h)
 
+    var displayRect = SDL_Rect(x: 0, y: 0, w: 0, h: 0)
+    SDL_GetDisplayBounds(SDL_GetPrimaryDisplay(), &displayRect)
+    print("Display size: \(displayRect.w)x\(displayRect.h)")
     print("Window size: \(width)x\(height)")
     print("Logical size: \(_width)x\(_height)")
     print("Renderer size: \(rect.w)x\(rect.h)")

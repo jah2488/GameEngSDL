@@ -94,6 +94,7 @@ class Scene: Renderable {
   func input(keys: Keys.State, game: Game) {}
 
   final func _destroy() {
+    print("Destroying \(self)")
     self.children.forEach { node in
       node._destroy()
     }

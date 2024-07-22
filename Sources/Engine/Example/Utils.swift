@@ -1,6 +1,7 @@
 import CSDL3
 import CSDL3_image
 import Foundation
+import simd
 
 struct Angle {
   let value: Double
@@ -55,6 +56,34 @@ struct Angle {
     Angle(lhs.value / rhs.value)
   }
 
+}
+
+func clamp(_ value: inout simd_float2, min: Float, max: Float) {
+  if value.x < min {
+    value.x = min
+  }
+
+  if value.x > max {
+    value.x = max
+  }
+
+  if value.y < min {
+    value.y = min
+  }
+
+  if value.y > max {
+    value.y = max
+  }
+}
+
+func clamp(_ value: inout Float, min: Float, max: Float) {
+  if value < min {
+    value = min
+  }
+
+  if value > max {
+    value = max
+  }
 }
 
 func clamp(_ value: inout Double, min: Double, max: Double) {

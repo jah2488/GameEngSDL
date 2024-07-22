@@ -3,7 +3,7 @@ import Foundation
 import simd
 
 class Bullet: Entity {
-  var lifetime: Double = 4.1
+  var lifetime: Double = 1.1
   var createdAt: Double = 0
 
   let fireSound = Sound(path: "Laser_Shoot.wav")
@@ -27,8 +27,6 @@ class Bullet: Entity {
   override func update(delta: Double) {
     let age = Date().timeIntervalSince1970 - self.createdAt
     if age > self.lifetime {
-      // TODO: This functionality should be encapsulated in a helper
-      // self.parent?.children.removeAll { $0 as? Bullet === self }
       self.alive = false
       return
     }
@@ -36,9 +34,30 @@ class Bullet: Entity {
     let velocityX = cos(self.rotation.value) * speed * -1
     let velocityY = sin(self.rotation.value) * speed * -1
 
-    // Update the bullet's position based on the velocity
-    // Delta is the time elapsed since the last frame, so multiplying by delta makes the movement frame-rate independent
     self.position.x += Float(velocityX) * Float(delta)
     self.position.y += Float(velocityY) * Float(delta)
+
+    if position.x + size.x < 0 {
+      position.x = Float(World.shared.width)
+    }
+
+    if position.x > Float(World.shared.width) {
+      position.x = 0
+    }
+
+    if position.y + size.y < 0 {
+      position.y = Float(World.shared.height)
+    }
+
+    if position.y > Float(World.shared.height) {
+      position.y = 0 - size.y
+    }
+
+  }
+
+  override func onCollisionStart(with other: Entity) {
+    if other is Asteroid {
+      self.alive = false
+    }
   }
 }

@@ -1,5 +1,33 @@
+import simd
+
+struct Weak<T: AnyObject> {
+  weak var value: T?
+}
 struct World {
-  var entities: [Entity] = []
+  static var shared = World()
+
+  let gravity: Double = 9.8
+  var width: Int = 800
+  var height: Int = 600
+
+  var a: Audio?
+
+  mutating func load(from: Game) {
+    self.width = from.width
+    self.height = from.height
+    self.a = from.a
+  }
+
+  var entities: [Weak<Entity>] = []
+  mutating func add(_ entity: Entity) {
+    // TODO: Prevent adding the same entity multiple times
+    entities.append(Weak(value: entity))
+  }
+
+  mutating func remove(_ entity: Entity) {
+    entities.removeAll { $0.value == nil }
+    entities.removeAll { ObjectIdentifier($0.value!) == ObjectIdentifier(entity) }
+  }
 }
 
 class Game {
@@ -49,6 +77,7 @@ class Game {
   final func _start() {
     self.state = .running
     self.start()
+    World.shared.load(from: self)
     log.log("Game _start()")
     self.s.current()._load()
     self.s.current()._start(game: self)
@@ -80,7 +109,7 @@ class Game {
   func update(delta: Double) {}
 
   func calculateCollisions() {
-    let entities = self.w.entities
+    let entities = World.shared.entities.compactMap { $0.value }
     for i in 0..<entities.count {
       for j in i + 1..<entities.count {
         let a = entities[i]
@@ -123,7 +152,7 @@ class Game {
   }
 }
 
-struct Rect<T: Numeric & Comparable> {
+struct Rect<T: Numeric & Comparable & BinaryFloatingPoint> {
   var x: T
   var y: T
   var width: T
@@ -133,6 +162,16 @@ struct Rect<T: Numeric & Comparable> {
   var right: T { return x + width }
   var top: T { return y }
   var bottom: T { return y + height }
+
+  var minX: T { return x }
+  var midX: T { return x + width / 2 }  //(0.5 as! T) }
+  var maxX: T { return x + width }
+
+  var center: simd_float2 { return simd_float2(Float(midX), Float(midY)) }
+
+  var minY: T { return y }
+  var midY: T { return y + height / 2 }
+  var maxY: T { return y + height }
 
   // Method to check overlap with another rectangle
   @inlinable
@@ -212,6 +251,12 @@ struct Color {
   var g: UInt8
   var b: UInt8
   var a: UInt8
+
+  static let red = Color(r: 255, g: 0, b: 0, a: 255)
+  static let black = Color(r: 0, g: 0, b: 0, a: 255)
+  static let white = Color(r: 255, g: 255, b: 255, a: 255)
+  static let green = Color(r: 0, g: 255, b: 0, a: 255)
+  static let blue = Color(r: 0, g: 0, b: 255, a: 255)
 }
 
 enum GameState {

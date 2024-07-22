@@ -8,6 +8,17 @@ class PlayScene: Scene {
     addChild(Asteroid())
     addChild(Asteroid())
     addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
     addChild(Player())
   }
 }
