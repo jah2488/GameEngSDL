@@ -118,6 +118,7 @@ class Asteroid: Entity {
 
     self.velocity.x *= pow(0.99, Float(delta))
     self.velocity.y *= pow(0.99, Float(delta))
+
     if abs(velocity.x) < 0.0001 { velocity.x = 0 }
     if abs(velocity.y) < 0.0001 { velocity.y = 0 }
 
@@ -125,22 +126,18 @@ class Asteroid: Entity {
 
     if (position.x + size.x) < 0 - size.x {
       position.x = Float(World.shared.width)
-      velocity.x *= 0.5
     }
 
     if position.x + size.x > Float(World.shared.width) {
       position.x = 0 - size.x
-      velocity.x *= 0.5
     }
 
-    if position.y + size.y < 0 - size.y {
+    if position.y + size.y < 0 {
       position.y = Float(World.shared.height)
-      velocity.y *= 0.5
     }
 
     if position.y > Float(World.shared.height) {
-      position.y = 0 - size.y
-      velocity.y *= 0.5
+      position.y = 0
     }
   }
 

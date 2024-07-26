@@ -60,6 +60,8 @@ class Game {
 
   var e: EventQueue
 
+  var mouse = simd_float2(0, 0)
+
   /// The color to clear the screen with each frame.
   var clearColor: Color = Color(r: 0, g: 0, b: 0, a: 255)
 

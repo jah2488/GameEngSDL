@@ -187,6 +187,18 @@ class Entity: Renderable {
         child._draw(game: game)
       }
     }
+    // Draw velocity vector
+    let magnitude = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2))
+    let norm = normalize(velocity)
+    game.r.drawRect(
+      x: worldPosition.x, y: worldPosition.y, width: 3.0, height: magnitude,
+      tint: .red)
+
+    game.r.drawRect(
+      x: worldPosition.x - 6, y: worldPosition.y, width: 3, height: abs(norm.x) * 10, tint: .white)
+    game.r.drawRect(
+      x: worldPosition.x - 9, y: worldPosition.y, width: 3, height: abs(norm.y) * 10, tint: .green)
+
     if debugRender {
       var color = debugTint
       if isOverlapping {

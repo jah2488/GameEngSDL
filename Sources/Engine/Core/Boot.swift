@@ -4,7 +4,7 @@ import CSDL3_mixer
 import CSDL3_ttf
 import Foundation
 
-let log = Logger(.error)
+let log = Logger(.info)
 
 class Boot {
   var name: String
@@ -67,24 +67,37 @@ class Boot {
 
     SDL_SetRenderLogicalPresentation(
       renderer, _width, _height, SDL_LOGICAL_PRESENTATION_STRETCH, SDL_SCALEMODE_NEAREST)
-    // width = Int32(rect.w)
-    // height = Int32(rect.h)
 
     var displayRect = SDL_Rect(x: 0, y: 0, w: 0, h: 0)
     SDL_GetDisplayBounds(SDL_GetPrimaryDisplay(), &displayRect)
+
     print("Display size: \(displayRect.w)x\(displayRect.h)")
     print("Window size: \(width)x\(height)")
     print("Logical size: \(_width)x\(_height)")
     print("Renderer size: \(rect.w)x\(rect.h)")
 
+    // TODO: Move this to use standard resource loading, and it should be defined as part of game setup
     let icon = IMG_Load("GameEngSDL_GameEngSDL.bundle/Assets/icon.png")
     SDL_SetWindowIcon(window, icon)
     SDL_DestroySurface(icon)
 
     SDL_SetRenderScale(renderer, 1, 1)
+    SDL_SetWindowSize(window, _width * 3, _height * 3)
 
     self.width = _width
     self.height = _height
+  }
+
+  func withSDLRect(_ body: (inout SDL_Rect) -> Void) -> SDL_Rect {
+    // let testRect = withSDLRect { rect in
+    //   SDL_GetRenderViewport(renderer, &rect)
+    // }
+
+    // print("Rect: \(rect.w)x\(rect.h)")
+    // print("testRect: \(testRect.w)x\(testRect.h)")
+    var rect = SDL_Rect(x: 0, y: 0, w: 0, h: 0)
+    var _ = body(&rect)
+    return rect
   }
 
   deinit {
@@ -94,6 +107,11 @@ class Boot {
     TTF_Quit()
     IMG_Quit()
     SDL_Quit()
+  }
+
+  @inlinable
+  func mouseMask(_ button: Int32) -> UInt32 {
+    return ((1 << ((button) - 1)))
   }
 
   func run(game: Game) {
@@ -110,6 +128,7 @@ class Boot {
     game._start()
     log.start(time: Int(now))
     var keyStates = Keys.State()
+    var last_ticks = SDL_GetTicks()
     while game.isRunning {
       keyStates.resetReleased()
       let last = now
@@ -119,6 +138,31 @@ class Boot {
       var event = SDL_Event()
       while SDL_PollEvent(&event) != 0 {
         switch event.type {
+        case SDL_EVENT_MOUSE_MOTION.rawValue:
+          game.mouse.x = event.motion.x / 4
+          game.mouse.y = event.motion.y / 4
+          keyStates.mouse.x = event.motion.x
+          keyStates.mouse.y = event.motion.y
+          keyStates.mouse.dx = event.motion.xrel
+          keyStates.mouse.dy = event.motion.yrel
+        case SDL_EVENT_MOUSE_BUTTON_DOWN.rawValue:
+          if event.motion.state & mouseMask(1) == 1 {
+            if event.motion.state & mouseMask(2) != 0 {
+              keyStates.mouse.right = .down
+            } else {
+              keyStates.mouse.left = .down
+            }
+          }
+          break
+        case SDL_EVENT_MOUSE_BUTTON_UP.rawValue:
+          if event.motion.state & mouseMask(1) == 1 {
+            if event.motion.state & mouseMask(2) != 0 {
+              keyStates.mouse.right = .released
+            } else {
+              keyStates.mouse.left = .released
+            }
+          }
+          break
         case SDL_EVENT_GAMEPAD_BUTTON_DOWN.rawValue:
           keyStates.keys[Keys.button(from: SDL_GamepadButton.init(Int32(event.gbutton.button)))] =
             .down
@@ -175,6 +219,9 @@ class Boot {
         log.indent("_input")
         game._input(keys: keyStates)
         log.dedent()
+      }
+      if SDL_GetTicks() - last_ticks < 1000 / 10 {
+        continue
       }
 
       log.indent("_update")

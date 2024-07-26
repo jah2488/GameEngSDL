@@ -21,6 +21,14 @@ struct RendererManager {
     }
   }
 
+  func drawLine(
+    x: Float, y: Float, x2: Float, y2: Float,
+    tint: Color = Color(r: 255, g: 255, b: 255, a: 255)
+  ) {
+    SDL_SetRenderDrawColor(renderer, tint.r, tint.g, tint.b, tint.a)
+    SDL_RenderLine(renderer, x, y, x2, y2)
+  }
+
   func drawBackground(resource: any Resource, offsetX: Float, offsetY: Float) {
     let text = resource.texture
     SDL_SetTextureScaleMode(text, SDL_SCALEMODE_NEAREST)

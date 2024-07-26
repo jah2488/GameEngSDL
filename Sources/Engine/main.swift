@@ -17,12 +17,13 @@ class Main {
   static func run() {
 
     let name = "Asteroids"
-    let width: Int32 = 480 * 2
-    let height: Int32 = 270 * 2
+    let width: Int32 = 60 * 4
+    let height: Int32 = 45 * 4
 
     let boot = Boot(_name: name, _width: width, _height: height)
 
-    let game = Asteroids(
+    // let game = Asteroids( rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    let game = FallingSand(
       rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
 
     __GAME_RENDERER = boot.renderer
