@@ -4,7 +4,7 @@ import CSDL3_mixer
 import CSDL3_ttf
 import Foundation
 
-let log = Logger(.info)
+let log = Logger(.error)
 
 class Boot {
   var name: String

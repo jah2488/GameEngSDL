@@ -2,12 +2,6 @@ import CSDL3_ttf
 import Foundation
 
 class MenuUI: Entity {
-  var font: OpaquePointer!
-
-  required init() {
-    super.init()
-    self.font = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
-  }
 
   override func draw(game: Game) {
     let center = game.width / 2

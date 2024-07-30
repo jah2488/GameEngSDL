@@ -22,6 +22,9 @@ class Audio {
   var chunks: [Int: UnsafeMutablePointer<Mix_Chunk>] = [:]
 
   init() {
+    for channel: Int32 in 0..<6 {
+      Mix_Volume(channel, 20)
+    }
   }
 
   deinit {

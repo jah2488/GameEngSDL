@@ -117,6 +117,8 @@ class Entity: Renderable {
   /// The origin location of the entity. This defaults to the center of the entity. This determins the point around which the entity is rotated and scaled.
   var originLocation = OriginLocation.center
 
+  var alwaysOnTop: Bool = false
+
   var debugRender: Bool = false
 
   /// Bounds of the entity.

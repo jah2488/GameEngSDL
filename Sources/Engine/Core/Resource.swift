@@ -6,6 +6,8 @@ protocol Resource: Hashable {
   var type: ResourceType { get }
   var path: String { get }
   var texture: OpaquePointer! { get }
+  var width: Float { get set }
+  var height: Float { get set }
 }
 
 enum ResourceType {

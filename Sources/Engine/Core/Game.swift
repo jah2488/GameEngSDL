@@ -98,6 +98,8 @@ class Game {
   final func _draw() {
     self.draw()
     self.s.current()._draw(game: self)
+    //NOTE: Now that all the draw calls have been batched, draw them all in the correct order.
+    self.r._draw()
   }
 
   func draw() {}
