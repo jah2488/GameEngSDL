@@ -10,6 +10,16 @@ enum RenderCallType {
   case text
 }
 
+enum BlendMode {
+    case blend
+    case add
+    case mod
+    case mul
+    case none
+}
+
+
+
 struct RenderCall {
   let type: RenderCallType
   let resource: (any Resource)?
@@ -156,6 +166,7 @@ struct RendererManager {
   mutating func drawTexture(
     resource: any Resource, x: Float, y: Float, width: Float, height: Float, rotation: Double,
     origin: simd_float2? = nil,
+    blendMode: BlendMode = .blend,
     tint: Color,
     onTop: Bool = false
   ) {
@@ -208,8 +219,30 @@ struct RendererManager {
           SDL_RenderRect(renderer, &rect)
         }
       case .texture:
-        let frameWidth = call.resource!.width / Float(call.totalFrames)
         let text = call.resource?.texture
+        switch blendMode {
+        case .blend:
+          print("blend")
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_BLEND)
+          break
+        case .add:
+          print("add")
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_ADD)
+          break
+        case .mod:
+          print("mod")
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_MOD)
+          break
+        case .mul:
+          print("mul")
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_MUL)
+          break
+        case .none:
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_NONE)
+          break
+        }
+  
+        let frameWidth = call.resource!.width / Float(call.totalFrames)
         let width = call.width
         let height = call.height
         SDL_SetTextureScaleMode(call.resource?.texture, SDL_SCALEMODE_NEAREST)
@@ -245,3 +278,4 @@ struct RendererManager {
     batchedCalls = []
   }
 }
+

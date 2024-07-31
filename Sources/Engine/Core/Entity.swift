@@ -83,6 +83,9 @@ class Entity: Renderable {
   /// The texture of the entity.
   var texture: Asset?
 
+  /// The blendmode of the entity.
+  var blendMode: RendererManager.BlendMode = .blend
+
   /// The animated sprite of the entity.
   var sprite: Sprite?
 
@@ -256,6 +259,7 @@ class Entity: Renderable {
         width: width, height: height,
         rotation: worldRotation.converted(to: .degrees).value,
         origin: self.origin,
+        blendMode: self.blendMode,
         tint: self.tint)
     } else {
       if self.size.x == 0 || self.size.y == 0 {

@@ -25,7 +25,8 @@ class Main {
     let asteroids_game = Asteroids(
       rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
     let fallingsand_game = FallingSand(
-      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+     rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    // let game = FallingSand(rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
 
     __GAME_RENDERER = boot.renderer
 

@@ -67,17 +67,17 @@ class Explosion: Entity {
 }
 
 class Asteroid: Entity {
-  var speed: Double = Double.random(in: 2...20)
+  var speed: Double = Double.random(in: 2...10)
 
   required init() {
     super.init()
-    let width: Float = 64 * Float.random(in: (0.5)...(2.5))
+    let width: Float = 64 * Float.random(in: (0.5)...(2))
     self.position.x = Float.random(in: 0...(Float(World.shared.width) - 64))
     self.position.y = Float.random(in: 0...(Float(World.shared.height) - 64))
 
     self.texture = Asset(path: "asteroid.png")
     self.size = simd_float2(width, width)
-    self.mass = 1 * width
+    self.mass = (width) * 0.001
     self.velocity = simd_float2(Float.random(in: -2...1), Float.random(in: -1...2))
   }
 
@@ -199,8 +199,8 @@ class Asteroid: Entity {
         }
       }
 
-      self.velocity *= -1
-      with.velocity *= -1
+      self.velocity *= -1 + with.mass
+      with.velocity *= -1 + self.mass
     }
 
   }

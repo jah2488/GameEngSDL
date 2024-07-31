@@ -59,6 +59,7 @@ class Boot {
 
     self.window = SDL_CreateWindow(name, width, height, windowFlags)
     self.renderer = SDL_CreateRenderer(window, nil)
+    // SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND)
 
     SDL_ShowWindow(window)
     SDL_GetWindowSizeInPixels(window, &width, &height)
