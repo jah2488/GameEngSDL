@@ -6,16 +6,16 @@ class Shield: Entity {
   required init() {
     super.init()
     self.sprite = Sprite(
-      path: "shield.png", frames: 6, frameRate: 1 / 60, loop: true, animationCompleted: {})
+      path: "shield.png", frames: 6, frameRate: 1 / 120, loop: true, animationCompleted: {})
     self.size = simd_float2(64, 64)
-    self.blendMode = .add
+    self.blendMode = .blend
     self.relative = true
     self.originLocation = .center
     self.position = simd_float2(-10, -16)
   }
 
   override func update(delta: Double) {
-    self.rotation = self.rotation + Measurement(value: 10 * delta, unit: UnitAngle.radians)
+    self.rotation = self.rotation + Measurement(value: 20 * delta, unit: UnitAngle.radians)
   }
 }
 
@@ -185,7 +185,9 @@ class Player: Entity {
   func fire(game: Game) {
     let bullet = Bullet()
     bullet.position = self.position + (self.origin / 2)
-    bullet.rotation = self.rotation
+    bullet.rotation =
+      self.rotation
+      + Measurement(value: 1 * Double.random(in: -(0.1)...(0.1)), unit: UnitAngle.radians)
     bullet.parent = self
     self.children.append(bullet)
     bullet.start(game: game)

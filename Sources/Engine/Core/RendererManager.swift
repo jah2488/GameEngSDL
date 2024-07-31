@@ -121,14 +121,14 @@ struct RendererManager {
   mutating func drawTextureAnimated(
     resource: Asset, x: Float, y: Float, width: Int, height: Int,
     frame: Int, totalFrames: Int, rotation: Double,
-    origin: simd_float2? = nil, tint: Color, onTop: Bool = false
+    origin: simd_float2? = nil, blendMode: BlendMode = .blend, tint: Color, onTop: Bool = false
   ) {
     let drawOrigin = origin ?? simd_float2(Float(width) / 2, Float(height) / 2)
     batchedCalls.append(
       RenderCall(
         type: .texture, resource: resource, x: x, y: y, width: Float(width), height: Float(height),
         tint: tint,
-        frame: frame, totalFrames: totalFrames, blendMode: .blend, rotation: rotation,
+        frame: frame, totalFrames: totalFrames, blendMode: blendMode, rotation: rotation,
         origin: drawOrigin, onTop: onTop
       ))
   }

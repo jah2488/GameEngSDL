@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "swift",
+			"args": [
+				"run"
+			],
+			"env": {},
+			"cwd": "/Users/jah2488/GameEngSDL",
+			"disableTaskQueue": true,
+			"showBuildStatus": "swiftStatus",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"label": "swift: Build & Run",
+			"detail": "swift run"
+		}
+	]
+}

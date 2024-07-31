@@ -120,9 +120,13 @@ class Entity: Renderable {
   /// The origin location of the entity. This defaults to the center of the entity. This determins the point around which the entity is rotated and scaled.
   var originLocation = OriginLocation.center
 
+  /// If true, the entity will always be drawn on top of other entities.
+  /// Note: Multiple entities with this set to true will be drawn in the order they were added.
   var alwaysOnTop: Bool = false
 
-  var debugRender: Bool = true
+  /// If true, the entity will be drawn with a debug texture around its bounding box.
+  // TODO: Find a way to set this flag recursively any part of a render heirarchy.
+  var debugRender: Bool = false
 
   /// Bounds of the entity.
   var bounds: Rect<Float> {
@@ -249,6 +253,7 @@ class Entity: Renderable {
         frame: self.sprite!.frame, totalFrames: self.sprite!.totalFrames,
         rotation: worldRotation.converted(to: .degrees).value,
         origin: self.origin,
+        blendMode: self.blendMode,
         tint: self.tint
       )
     } else if self.texture != nil {

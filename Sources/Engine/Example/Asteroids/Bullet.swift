@@ -5,7 +5,7 @@ import simd
 class Bullet: Entity {
   var lifetime: Double = 1.1
   var createdAt: Double = 0
-  let speed: Double = 100  // Speed of the bullet in units per second
+  let speed: Double = 1500  // Speed of the bullet in units per second
 
   let fireSound = Sound(path: "Laser_Shoot.wav")
   var chunkID: Int?
