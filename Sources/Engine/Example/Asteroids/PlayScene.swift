@@ -14,26 +14,45 @@ class GameUI: Entity {
 }
 
 class PlayScene: Scene {
+  var player: Player = Player()
   override func start(game: Game) {
-    var player = Player()
     addChild(StarBackground())
     addChild(GameUI())
     addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
-    // addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
+    addChild(Asteroid())
     addChild(player)
+  }
+
+  override func draw(game: Game) {
+    if player.lives < 1 {
+      self.children.removeAll()
+      game.r.drawRect(
+        x: Float(World.shared.width / 2) - 100,
+        y: Float(World.shared.height / 2) - 30, width: 200, height: 60, filled: false)
+      game.r.drawText(
+        text: "Game Over", x: Float(World.shared.width / 2) - 100,
+        y: Float(World.shared.height / 2) - 30,
+        width: 100, height: 30)
+    }
+  }
+
+  override func update(delta: Double) {
+    if children.count < 1 {
+      addChild(Asteroid())
+    }
   }
 }

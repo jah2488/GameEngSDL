@@ -2,24 +2,45 @@ import CSDL3
 import Foundation
 import simd
 
+class Shield: Entity {
+  required init() {
+    super.init()
+    self.sprite = Sprite(
+      path: "shield.png", frames: 6, frameRate: 1 / 60, loop: true, animationCompleted: {})
+    self.size = simd_float2(64, 64)
+    self.blendMode = .add
+    self.relative = true
+    self.originLocation = .center
+    self.position = simd_float2(-10, -16)
+  }
+
+  override func update(delta: Double) {
+    self.rotation = self.rotation + Measurement(value: 10 * delta, unit: UnitAngle.radians)
+  }
+}
+
 class Player: Entity {
   var thrust: Double = 0
   var rotationSpeed: Double = 0
   var lives: Int = 0
+  var shield: Bool = false
   var invulnerable: Bool = false
 
   var damagedSound = Sound(path: "Explosion.wav")
   var chunkID: Int?
+  var shieldSprite = Shield()
 
   required init() {
     super.init()
     let thruster = Thruster()
-    self.children = [thruster]
+    self.children = [thruster, shieldSprite]
     self.size = simd_float2(32, 32)
     self.texture = Asset(path: "ship.png")
     self.originLocation = .custom(simd_float2(23, 16))
     thruster.parent = self
+    shieldSprite.parent = self
     self.lives = 3
+    self.shield = false
   }
 
   override func start(game: Game) {
@@ -60,6 +81,12 @@ class Player: Entity {
       position.y = 0 - size.y
     }
 
+    if shield {
+      shieldSprite.visible = true
+    } else {
+      shieldSprite.visible = false
+    }
+
   }
 
   override func input(keys: Keys.State, game: Game) {
@@ -80,6 +107,16 @@ class Player: Entity {
       rotationSpeed += 1
     }
 
+    if keys.isPressed(.q) || keys.isPressed(.eastBtn) {
+      thrust *= 0.01
+      velocity *= 0.5
+      shield = true
+    }
+
+    if keys.isReleased(.q) || keys.isReleased(.eastBtn) {
+      shield = false
+    }
+
     if keys.isReleased(.space) || keys.isReleased(.southBtn) {
       fire(game: game)
     }
@@ -98,6 +135,11 @@ class Player: Entity {
 
   override func onCollisionStart(with: Entity) {
     if with is Asteroid {
+      if shield {
+        shield = false
+        with.destroy()
+        return
+      }
       self.damage()
     }
   }
@@ -113,17 +155,10 @@ class Player: Entity {
     self.tint = .red
     DispatchQueue.main.async {
       self.tint = .white
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        self.tint = .red
-      }
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-        self.tint = .white
-      }
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-        self.tint = .red
-      }
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-        self.tint = .white
+      self.flash()
+      self.flash()
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        self.invulnerable = false
       }
     }
 
@@ -132,13 +167,29 @@ class Player: Entity {
     }
   }
 
+  func flash() {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      self.tint = .red
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+      self.tint = .white
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+      self.tint = .red
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+      self.tint = .white
+    }
+  }
+
   func fire(game: Game) {
     let bullet = Bullet()
-    bullet.position = self.position + self.origin
+    bullet.position = self.position + (self.origin / 2)
     bullet.rotation = self.rotation
     bullet.parent = self
     self.children.append(bullet)
     bullet.start(game: game)
+    self.velocity.x += cos(Float(self.rotation.value)) * 50
   }
 
 }

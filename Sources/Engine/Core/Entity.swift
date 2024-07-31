@@ -122,7 +122,7 @@ class Entity: Renderable {
 
   var alwaysOnTop: Bool = false
 
-  var debugRender: Bool = false
+  var debugRender: Bool = true
 
   /// Bounds of the entity.
   var bounds: Rect<Float> {

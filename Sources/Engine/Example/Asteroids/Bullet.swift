@@ -5,6 +5,7 @@ import simd
 class Bullet: Entity {
   var lifetime: Double = 1.1
   var createdAt: Double = 0
+  let speed: Double = 100  // Speed of the bullet in units per second
 
   let fireSound = Sound(path: "Laser_Shoot.wav")
   var chunkID: Int?
@@ -23,7 +24,6 @@ class Bullet: Entity {
     game.a.play(chunkID!, .soundfx)
   }
 
-  let speed: Double = 800  // Speed of the bullet in units per second
   override func update(delta: Double) {
     let age = Date().timeIntervalSince1970 - self.createdAt
     if age > self.lifetime {
