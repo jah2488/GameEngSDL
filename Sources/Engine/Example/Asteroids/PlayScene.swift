@@ -40,9 +40,6 @@ class PlayScene: Scene {
   override func draw(game: Game) {
     if player.lives < 1 {
       self.children.removeAll()
-      game.r.drawRect(
-        x: Float(World.shared.width / 2) - 100,
-        y: Float(World.shared.height / 2) - 30, width: 200, height: 60, filled: false)
       game.r.drawText(
         text: "Game Over", x: Float(World.shared.width / 2) - 100,
         y: Float(World.shared.height / 2) - 30,

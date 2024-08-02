@@ -96,7 +96,7 @@ class Player: Entity {
     }
 
     if keys.isPressed(.s) || keys.isPressed(.dpadDownBtn) {
-      thrust += 50
+      thrust += 5
     }
 
     if keys.isPressed(.a) || keys.isPressed(.dpadLeftBtn) || keys.isPressed(.leftShoulderBtn) {
@@ -155,10 +155,10 @@ class Player: Entity {
     self.tint = .red
     DispatchQueue.main.async {
       self.tint = .white
-      self.flash()
-      self.flash()
-      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+      self.flash(for: 0.8, every: 0.1)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
         self.invulnerable = false
+        self.shield = true
       }
     }
 
@@ -167,18 +167,17 @@ class Player: Entity {
     }
   }
 
-  func flash() {
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-      self.tint = .red
-    }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-      self.tint = .white
-    }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-      self.tint = .red
-    }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-      self.tint = .white
+  func flash(for: Float, every: Float) {
+    for i in stride(from: 0, to: `for`, by: every) {
+      DispatchQueue.main.asyncAfter(deadline: .now() + Double(i)) {
+        print("flash - red")
+        self.tint = .red
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(i + every)) {
+          print("flash - white")
+          self.tint = .white
+        }
+      }
+
     }
   }
 

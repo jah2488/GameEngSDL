@@ -142,7 +142,6 @@ class Asteroid: Entity {
   }
 
   override func destroy() {
-
     explode()
   }
 
@@ -158,6 +157,7 @@ class Asteroid: Entity {
     }
 
     if with is Player {
+      self.alive = false
       if overlapX < overlapY {
         if self.bounds.center.x < with.bounds.center.x {
           self.position.x -= overlapX / 2

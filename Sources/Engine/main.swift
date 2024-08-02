@@ -16,21 +16,22 @@ class Main {
 
   static func run() {
 
-    let name = "Asteroids"
-    let width: Int32 = 800
-    let height: Int32 = 420
+    let name = "Sokoban"
+    let width: Int32 = 800 / 4
+    let height: Int32 = 420 / 4
 
     let boot = Boot(_name: name, _width: width, _height: height)
 
     let asteroids_game = Asteroids(
       rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
     let fallingsand_game = FallingSand(
-     rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
-    // let game = FallingSand(rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    let sokoban_game = Sokoban(
+      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
 
     __GAME_RENDERER = boot.renderer
 
-    boot.run(game: asteroids_game)
+    boot.run(game: sokoban_game)
 
     //log.log all availabile renderers
     // todo: decide if this is worth saving as a util somewhere.

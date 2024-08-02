@@ -7,6 +7,7 @@ import simd
 enum RenderCallType {
   case rect
   case texture
+  case tilemap
   case text
 }
 
@@ -17,6 +18,7 @@ struct RenderCall {
   let y: Float
   let width: Float
   let height: Float
+  let tile: UInt8
   let tint: Color
   let filled: Bool
   let frame: Int
@@ -29,6 +31,7 @@ struct RenderCall {
 
   init(
     type: RenderCallType, x: Float, y: Float, width: Float, height: Float, tint: Color,
+    tile: UInt8 = 0,
     filled: Bool, onTop: Bool = false
   ) {
     self.type = type
@@ -40,6 +43,7 @@ struct RenderCall {
     self.tint = tint
     self.filled = filled
     self.frame = 0
+    self.tile = tile
     self.totalFrames = 0
     self.blendMode = .blend
     self.rotation = 0
@@ -50,7 +54,7 @@ struct RenderCall {
 
   init(
     type: RenderCallType, resource: any Resource, x: Float, y: Float, width: Float, height: Float,
-    tint: Color, frame: Int,
+    tint: Color, tile: UInt8 = 0, frame: Int,
     totalFrames: Int, blendMode: RendererManager.BlendMode, rotation: Double, origin: simd_float2,
     onTop: Bool = false
   ) {
@@ -61,6 +65,7 @@ struct RenderCall {
     self.width = width
     self.height = height
     self.tint = tint
+    self.tile = tile
     self.frame = frame
     self.totalFrames = totalFrames
     self.blendMode = blendMode
@@ -72,7 +77,8 @@ struct RenderCall {
   }
 
   init(
-    type: RenderCallType, x: Float, y: Float, width: Float, height: Float, text: String,
+    type: RenderCallType, x: Float, y: Float, width: Float, tile: UInt8 = 0, height: Float,
+    text: String,
     onTop: Bool = false
   ) {
     self.type = type
@@ -83,6 +89,7 @@ struct RenderCall {
     self.height = height
     self.text = text
     self.tint = Color(r: 255, g: 255, b: 255, a: 255)
+    self.tile = tile
     self.frame = 0
     self.totalFrames = 0
     self.blendMode = .blend
@@ -134,6 +141,22 @@ struct RendererManager {
   }
 
   mutating func drawTexture(
+    resource: any Resource,
+    x: Float, y: Float, width: Float, height: Float, tile: UInt8
+  ) {
+    batchedCalls.append(
+      RenderCall(
+        type: .tilemap,
+        resource: resource, x: x, y: y, width: width, height: height,
+        tint: Color(r: 255, g: 255, b: 255, a: 255),
+        tile: tile,
+        frame: Int(tile), totalFrames: 0, blendMode: .blend, rotation: 0, origin: simd_float2(0, 0),
+        onTop: false
+      )
+    )
+  }
+
+  mutating func drawTexture(
     resource: any Resource, x: Float, y: Float, width: Float, height: Float, rotation: Double,
     origin: simd_float2? = nil,
     blendMode: BlendMode = .blend,
@@ -168,6 +191,7 @@ struct RendererManager {
         } else {
           SDL_RenderRect(renderer, &rect)
         }
+        break
       case .texture:
         let text = call.resource?.texture
         switch call.blendMode {
@@ -205,6 +229,42 @@ struct RendererManager {
             } else {
               SDL_FRect(x: 0, y: 0, w: call.resource!.width, h: call.resource!.height)
             }
+          let drawOrigin = call.origin ?? simd_float2(width / 2, height / 2)
+          var oPoint = SDL_FPoint(x: drawOrigin.x, y: drawOrigin.y)
+          SDL_RenderTextureRotated(
+            renderer, text, &frameRect, rect, call.rotation, &oPoint, SDL_FLIP_NONE)
+        }
+        break
+      case .tilemap:
+        let text = call.resource?.texture
+        switch call.blendMode {
+        case .blend:
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_BLEND)
+        case .add:
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_ADD)
+        case .mod:
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_MOD)
+        case .mul:
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_MUL)
+        case .none:
+          SDL_SetTextureBlendMode(text, SDL_BLENDMODE_NONE)
+        }
+        let width = call.width
+        let height = call.height
+        let tilesPerRow = Int(call.resource!.width) / Int(width)
+        let tilex = call.tile % UInt8(tilesPerRow)
+        let tiley = call.tile / UInt8(tilesPerRow)
+        let x = Float(tilex) * width
+        let y = Float(tiley) * height
+        SDL_SetTextureScaleMode(call.resource?.texture, SDL_SCALEMODE_NEAREST)
+        let _ = withUnsafePointer(
+          to: SDL_FRect(x: call.x, y: call.y, w: Float(width), h: Float(height))
+        ) {
+          rect in
+          SDL_SetTextureColorMod(text, call.tint.r, call.tint.g, call.tint.b)
+
+          var frameRect =
+            SDL_FRect(x: x, y: y, w: width, h: height)
           let drawOrigin = call.origin ?? simd_float2(width / 2, height / 2)
           var oPoint = SDL_FPoint(x: drawOrigin.x, y: drawOrigin.y)
           SDL_RenderTextureRotated(

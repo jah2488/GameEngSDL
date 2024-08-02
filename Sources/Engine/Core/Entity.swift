@@ -126,7 +126,7 @@ class Entity: Renderable {
 
   /// If true, the entity will be drawn with a debug texture around its bounding box.
   // TODO: Find a way to set this flag recursively any part of a render heirarchy.
-  var debugRender: Bool = false
+  var debugRender: Bool = true
 
   /// Bounds of the entity.
   var bounds: Rect<Float> {
