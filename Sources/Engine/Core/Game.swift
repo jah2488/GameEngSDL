@@ -1,35 +1,5 @@
 import simd
 
-struct Weak<T: AnyObject> {
-  weak var value: T?
-}
-struct World {
-  static var shared = World()
-
-  let gravity: Double = 9.8
-  var width: Int = 800
-  var height: Int = 600
-
-  var a: Audio?
-
-  mutating func load(from: Game) {
-    self.width = from.width
-    self.height = from.height
-    self.a = from.a
-  }
-
-  var entities: [Weak<Entity>] = []
-  mutating func add(_ entity: Entity) {
-    // TODO: Prevent adding the same entity multiple times
-    entities.append(Weak(value: entity))
-  }
-
-  mutating func remove(_ entity: Entity) {
-    entities.removeAll { $0.value == nil }
-    entities.removeAll { ObjectIdentifier($0.value!) == ObjectIdentifier(entity) }
-  }
-}
-
 class Game {
   /// The width of the viewport of the game in pixels.
   var width: Int
@@ -55,8 +25,11 @@ class Game {
   /// Helper property to access the Audio System
   var a: Audio
 
-  /// Private Helper property to access the state of the world
+  /// Helper property to access the state of the world
   var w: World
+
+  /// Helper proper to access the global InputMap
+  var i: InputMap
 
   var e: EventQueue
 
@@ -72,14 +45,16 @@ class Game {
     self.s = SceneManager.empty
     self.r = RendererManager(renderer: rendererPointer)
     self.a = Audio()
-    self.w = World()
+    self.w = World.shared
     self.e = EventQueue()
+    self.i = InputMap.shared
   }
 
   final func _start() {
     self.state = .running
     self.start()
     World.shared.load(from: self)
+    self.i.addDefaultBindings()
     log.log("Game _start()")
     self.s.current()._load()
     self.s.current()._start(game: self)
@@ -129,12 +104,12 @@ class Game {
     }
   }
 
-  final func _input(keys: Keys.State) {
-    self.input(keys: keys)
-    self.s.current()._input(keys: keys, game: self)
+  final func _input(event: InputEvent, keys: Keys.State) {
+    self.input(event: event, keys: keys)
+    self.s.current()._input(event: event, keys: keys, game: self)
   }
 
-  func input(keys: Keys.State) {}
+  func input(event: InputEvent, keys: Keys.State) {}
 
   final func _destroy() {
     self.destroy()

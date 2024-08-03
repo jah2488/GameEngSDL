@@ -294,10 +294,10 @@ class Entity: Renderable {
   /// - Parameter delta: The time (in milliseconds) since the last update
   func update(delta: Double) {}
 
-  func _input(keys: Keys.State, game: Game) {
-    input(keys: keys, game: game)
+  func _input(event: InputEvent, keys: Keys.State, game: Game) {
+    input(event: event, keys: keys, game: game)
     self.children.forEach { child in
-      child._input(keys: keys, game: game)
+      child._input(event: event, keys: keys, game: game)
     }
   }
 
@@ -306,6 +306,7 @@ class Entity: Renderable {
   /// - Parameters:
   ///   - keys: A struct containing the current state of the keyboard
   ///   - game: A reference to the main game object
+  func input(event: InputEvent, keys: Keys.State, game: Game) {}
   func input(keys: Keys.State, game: Game) {}
 
   /// [Internal] Is the method that is called when its time to destroy the entity.

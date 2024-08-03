@@ -17,8 +17,8 @@ class Main {
   static func run() {
 
     let name = "Sokoban"
-    let width: Int32 = 800 / 4
-    let height: Int32 = 420 / 4
+    let width: Int32 = 800
+    let height: Int32 = 420
 
     let boot = Boot(_name: name, _width: width, _height: height)
 
@@ -31,7 +31,7 @@ class Main {
 
     __GAME_RENDERER = boot.renderer
 
-    boot.run(game: sokoban_game)
+    boot.run(game: asteroids_game)
 
     //log.log all availabile renderers
     // todo: decide if this is worth saving as a util somewhere.

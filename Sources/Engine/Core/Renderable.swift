@@ -4,5 +4,5 @@ protocol Renderable {
   func start(game: Game)
   func draw(game: Game)
   func update(delta: Double)
-  func input(keys: Keys.State, game: Game)  // TODO: Replace with internal Event
+  func input(event: InputEvent, keys: Keys.State, game: Game)  // TODO: Replace with internal Event
 }
