@@ -217,17 +217,25 @@ class Boot {
 
       //Send pressed data to game scenes and nodes
       if !keyStates.empty() {
+        // Loop over all keyStates and check if they have a corresponding action in the InputMap
+        // If they do, create an InputEvent and send it to the current scene
         log.indent("_input")
-        game._input(keys: keyStates)
+        for (key, state) in keyStates.keys {
+          // TODO: This only sends the first action for a key, but there could be multiple actions
+          if let action = game.i.getActions(for: key).first {
+            let event = InputEvent(action: action, state: state)
+            game._input(event: event, keys: keyStates)
+          }
+        }
         log.dedent()
       }
-      if SDL_GetTicks() - last_ticks < 1000 / 10 {
-        continue
-      }
 
+      // log.log("\(SDL_GetTicks() - last_ticks)ms")
+      // if SDL_GetTicks() - last_ticks < 1000 / 120 {
       log.indent("_update")
       game._update(delta: delta)
       log.dedent()
+      // }
 
       let c = game.clearColor
       SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a)
@@ -239,6 +247,7 @@ class Boot {
 
       SDL_RenderPresent(renderer)
       game._cleanup()
+      last_ticks = SDL_GetTicks()
     }
   }
 }
