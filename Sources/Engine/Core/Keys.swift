@@ -43,6 +43,10 @@ class Keys {
     }
   }
   enum Key {
+    case left
+    case right
+    case up
+    case down
     case leftshift
     case rightshift
     case returnKey
@@ -287,6 +291,10 @@ class Keys {
     case SDLK_PIPE: return Key.pipe
     case SDLK_RIGHTBRACE: return Key.rightbrace
     case SDLK_TILDE: return Key.tilde
+    case SDLK_LEFT: return Key.left
+    case SDLK_RIGHT: return Key.right
+    case SDLK_UP: return Key.up
+    case SDLK_DOWN: return Key.down
     default:
       log.log("Unknown key: \(sdlKey)")
       return Key.none
