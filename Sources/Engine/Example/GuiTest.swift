@@ -1,5 +1,6 @@
 class GuiTest: Game {
   var clicks: Int = 0
+  var buttonLabel: String = "Click me!"
   var gui: some UIComponent {
     return VStack(height: .fixed(World.shared.height)) {
       Text("hello", fontSize: .Header)
@@ -8,7 +9,7 @@ class GuiTest: Game {
       Text("!")
       Text("[I am before VStack]")
       HStack {
-        Text("goodnight").color(.blue)
+        Text("goodnight").with({ $0.color(.green) })
         Text("moon", fontSize: .Banner)
         Spacer(size: 30)
         VStack {
@@ -18,9 +19,9 @@ class GuiTest: Game {
         }
       }
       Text("[I am after VStack]")
-      Button("Click me!") {
-        print("omg you clicked me \(self.clicks) times!")
+      Button(buttonLabel) {
         self.clicks += 1
+        self.buttonLabel = "You clicked me \(self.clicks) times!"
       }
     }
   }
