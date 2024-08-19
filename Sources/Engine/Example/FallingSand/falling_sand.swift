@@ -341,7 +341,7 @@ class FallingSand: Game {
   let fps: Double = (1000 / 120) / 1000
   override func update(delta: Double) {
     elapsed += delta
-    cursor.position = self.mouse
+    cursor.position = simd_float2(Float(self.mouse.x), Float(self.mouse.y))
     cursor.update(delta: delta)
     //Update each pixel based on its neighbors and its type
     self.updatePixels()

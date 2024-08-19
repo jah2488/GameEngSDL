@@ -25,6 +25,7 @@ struct RenderCall {
   let totalFrames: Int
   let blendMode: RendererManager.BlendMode
   let rotation: Double
+  let size: RendererManager.FontSize
   let origin: simd_float2?
   let text: String
   let onTop: Bool
@@ -49,6 +50,7 @@ struct RenderCall {
     self.rotation = 0
     self.origin = nil
     self.text = ""
+    self.size = .Body
     self.onTop = onTop
   }
 
@@ -73,12 +75,15 @@ struct RenderCall {
     self.origin = origin
     self.filled = false
     self.text = ""
+    self.size = .Body
     self.onTop = onTop
   }
 
   init(
     type: RenderCallType, x: Float, y: Float, width: Float, tile: UInt8 = 0, height: Float,
     text: String,
+    size: RendererManager.FontSize,
+    tint: Color = Color(r: 255, g: 255, b: 255, a: 255),
     onTop: Bool = false
   ) {
     self.type = type
@@ -88,7 +93,8 @@ struct RenderCall {
     self.width = width
     self.height = height
     self.text = text
-    self.tint = Color(r: 255, g: 255, b: 255, a: 255)
+    self.size = size
+    self.tint = tint
     self.tile = tile
     self.frame = 0
     self.totalFrames = 0
@@ -110,14 +116,30 @@ struct RendererManager {
     case mul
     case none
   }
+
+  enum FontSize {
+    case Banner
+    case Title
+    case Subtitle
+    case Header
+    case Subheader
+    case Body
+    case Large
+    case Small
+  }
   let renderer: OpaquePointer!
-  let font = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 64)
+  let font = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
+  let font_18 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
+  let font_16 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 32)
+  let font_14 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
+  let font_12 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
+  let font_10 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
   var batchedCalls: [RenderCall] = []
 
   mutating func drawRect(
     x: Float, y: Float, width: Float, height: Float,
     tint: Color = Color(r: 255, g: 255, b: 255, a: 255),
-    filled: Bool = true, onTop: Bool = false
+    filled: Bool = false, onTop: Bool = false
   ) {
     batchedCalls.append(
       RenderCall(
@@ -172,11 +194,44 @@ struct RendererManager {
         onTop: onTop))
   }
 
+  func measureText(text: String, fontSize: FontSize) -> (Int32, Int32, Int32) {
+    var width: Int32 = 0
+    var height: Int32 = 0
+    var count: Int32 = 0
+    let fontToMeasure =
+      switch fontSize {
+      case .Banner:
+        font
+      case .Title:
+        font_18
+      case .Subtitle:
+        font_16
+      case .Header:
+        font_14
+      case .Subheader:
+        font_12
+      case .Body:
+        font_10
+      case .Large:
+        font_18
+      case .Small:
+        font_10
+      }
+    TTF_SizeUTF8(fontToMeasure, text, &width, &height)
+    TTF_MeasureUTF8(fontToMeasure, text, Int32(World.shared.width), &width, &count)
+    return (width, height, count)
+  }
+
   mutating func drawText(
-    text: String, x: Float, y: Float, width: Float, height: Float, onTop: Bool = false
+    text: String, size: FontSize = .Body, tint: Color = .white, x: Float, y: Float, width: Float,
+    height: Float,
+    onTop: Bool = false
   ) {
     batchedCalls.append(
-      RenderCall(type: .text, x: x, y: y, width: width, height: height, text: text, onTop: onTop))
+      RenderCall(
+        type: .text, x: x, y: y, width: width, height: height, text: text, size: size, tint: tint,
+        onTop: onTop)
+    )
   }
 
   mutating func _draw() {
@@ -271,8 +326,31 @@ struct RendererManager {
             renderer, text, &frameRect, rect, call.rotation, &oPoint, SDL_FLIP_NONE)
         }
       case .text:
-        let surface = TTF_RenderUTF8_Blended(
-          font, call.text, SDL_Color(r: 255, g: 255, b: 255, a: 255))
+        let fontSize =
+          switch call.size {
+          case .Banner:
+            font
+          case .Title:
+            font_18
+          case .Subtitle:
+            font_16
+          case .Header:
+            font_14
+          case .Subheader:
+            font_12
+          case .Body:
+            font_10
+          case .Large:
+            font_18
+          case .Small:
+            font_10
+          }
+        let surface = TTF_RenderUTF8_Solid(
+          fontSize,
+          call.text,
+          SDL_Color(r: call.tint.r, g: call.tint.g, b: call.tint.b, a: call.tint.a)
+          // SDL_Color(r: 255, g: 0, b: 0, a: 0)
+        )
         let texture = SDL_CreateTextureFromSurface(renderer, surface)
         var rect = SDL_FRect(x: call.x, y: call.y, w: call.width, h: call.height)
 
