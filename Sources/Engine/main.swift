@@ -24,16 +24,16 @@ class Main {
 
     let asteroids_game = Asteroids(
       rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
-    let fallingsand_game = FallingSand(
-      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
-    let sokoban_game = Sokoban(
-      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
-    let gui = GuiTest(
-      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    // let fallingsand_game = FallingSand(
+    //   rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    // let sokoban_game = Sokoban(
+    //   rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    // let gui = GuiTest(
+    //   rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
 
     __GAME_RENDERER = boot.renderer
 
-    boot.run(game: gui)
+    boot.run(game: asteroids_game)
 
     //log.log all availabile renderers
     // todo: decide if this is worth saving as a util somewhere.

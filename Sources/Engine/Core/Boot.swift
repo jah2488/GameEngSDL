@@ -4,7 +4,8 @@ import CSDL3_mixer
 import CSDL3_ttf
 import Foundation
 
-let log = Logger(.error)
+//TODO: Move this to a more appropriate location, and let log levels be set when the game is about to be run
+let log = Logger(.warning)
 
 class Boot {
   var name: String
@@ -30,7 +31,7 @@ class Boot {
     var count: Int32 = 0
     SDL_GetGamepads(&count)
     var gamepad: OpaquePointer!
-    for i: UInt32 in UInt32(0)..<(UInt32(10)) {
+    for i: UInt32 in UInt32(0)..<(UInt32(10)) {  // Seems reasonable to only look for 10 gamepads
       gamepad = SDL_OpenGamepad(UInt32(i))
       if gamepad != nil {
         break

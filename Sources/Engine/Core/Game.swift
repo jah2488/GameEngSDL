@@ -110,7 +110,7 @@ class Game {
     self.s = SceneManager.empty
     self.r = RendererManager(renderer: rendererPointer)
     self.a = Audio()
-    self.w = World()
+    self.w = World.shared
     self.e = EventQueue()
   }
 
@@ -137,7 +137,7 @@ class Game {
     self.draw()
     self.s.current()._draw(game: self)
     //NOTE: Now that all the draw calls have been batched, draw them all in the correct order.
-    World.shared.r!._draw()
+    self.r._draw()
   }
 
   func draw() {}

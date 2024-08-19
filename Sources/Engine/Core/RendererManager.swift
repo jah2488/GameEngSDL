@@ -108,7 +108,7 @@ struct RenderCall {
 
 //TODO: Rename this class, bad name, not descriptive enough and weird to say.
 //All of these draw calls should be batched into a single list so they can be drawn in a single call and in the correct draw order and not dependent on when they're called.
-struct RendererManager {
+class RendererManager {
   enum BlendMode {
     case blend
     case add
@@ -134,9 +134,15 @@ struct RendererManager {
   let font_14 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
   let font_12 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
   let font_10 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
-  var batchedCalls: [RenderCall] = []
+  var batchedCalls: [RenderCall]
 
-  mutating func drawRect(
+  init(renderer: OpaquePointer) {
+    print("RendererManager init")
+    self.renderer = renderer
+    self.batchedCalls = []
+  }
+
+  func drawRect(
     x: Float, y: Float, width: Float, height: Float,
     tint: Color = Color(r: 255, g: 255, b: 255, a: 255),
     filled: Bool = false, onTop: Bool = false
@@ -147,7 +153,7 @@ struct RendererManager {
         onTop: onTop))
   }
 
-  mutating func drawTextureAnimated(
+  func drawTextureAnimated(
     resource: Asset, x: Float, y: Float, width: Int, height: Int,
     frame: Int, totalFrames: Int, rotation: Double,
     origin: simd_float2? = nil, blendMode: BlendMode = .blend, tint: Color, onTop: Bool = false
@@ -162,7 +168,7 @@ struct RendererManager {
       ))
   }
 
-  mutating func drawTexture(
+  func drawTexture(
     resource: any Resource,
     x: Float, y: Float, width: Float, height: Float, tile: UInt8
   ) {
@@ -178,7 +184,7 @@ struct RendererManager {
     )
   }
 
-  mutating func drawTexture(
+  func drawTexture(
     resource: any Resource, x: Float, y: Float, width: Float, height: Float, rotation: Double,
     origin: simd_float2? = nil,
     blendMode: BlendMode = .blend,
@@ -222,7 +228,7 @@ struct RendererManager {
     return (width, height, count)
   }
 
-  mutating func drawText(
+  func drawText(
     text: String, size: FontSize = .Body, tint: Color = .white, x: Float, y: Float, width: Float,
     height: Float,
     onTop: Bool = false
@@ -234,7 +240,7 @@ struct RendererManager {
     )
   }
 
-  mutating func _draw() {
+  func _draw() {
     batchedCalls.sort { $0.onTop && !$1.onTop }
     for call in batchedCalls {
       switch call.type {
