@@ -131,7 +131,7 @@ class Boot {
     game._start()
     log.start(time: Int(now))
     var keyStates = Keys.State()
-    var last_ticks = SDL_GetTicks()
+    let last_ticks = SDL_GetTicks()
     while game.isRunning {
       keyStates.resetReleased()
       game.mouse.left == .released ? game.mouse.left = .up : ()
