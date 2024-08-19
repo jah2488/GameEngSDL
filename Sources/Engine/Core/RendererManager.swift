@@ -349,7 +349,6 @@ struct RendererManager {
           fontSize,
           call.text,
           SDL_Color(r: call.tint.r, g: call.tint.g, b: call.tint.b, a: call.tint.a)
-          // SDL_Color(r: 255, g: 0, b: 0, a: 0)
         )
         let texture = SDL_CreateTextureFromSurface(renderer, surface)
         var rect = SDL_FRect(x: call.x, y: call.y, w: call.width, h: call.height)
