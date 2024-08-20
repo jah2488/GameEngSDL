@@ -10,7 +10,7 @@ class GuiTest: Game {
       Text("0123456789", fontSize: .Body)
       Text("[I am before VStack]")
       HStack {
-        Text("goodnight").with({ $0.color(.green) })
+        Text("goodnight").color(.blue)
         Text("moon", fontSize: .Banner)
         Spacer(size: 30)
         VStack {

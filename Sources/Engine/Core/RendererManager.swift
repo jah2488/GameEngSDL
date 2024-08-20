@@ -117,14 +117,23 @@ class RendererManager {
     case none
   }
 
+  /// The font size to use for text rendering.
   enum FontSize {
+    /// 48pt font
     case Banner
+    /// 36pt font
     case Title
+    /// 32pt font
     case Subtitle
+    /// 28pt font
     case Header
+    /// 24pt font
     case Subheader
+    /// 20pt font
     case Body
+    /// 36pt font
     case Large
+    /// 20pt font
     case Small
   }
   let renderer: OpaquePointer!

@@ -8,10 +8,11 @@ struct Text: UIComponent {
   var height: Int
 
   var _color = UIAttr<Color>.unset
-  @discardableResult
-  mutating func color(_ color: Color) -> Self {
-    self._color = .set(color)
-    return self
+  // @discardableResult
+  func color(_ color: Color) -> Text {
+    var copy = self
+    copy._color = .set(color)
+    return copy
   }
 
   init(_ text: String, fontSize: RendererManager.FontSize = .Body) {

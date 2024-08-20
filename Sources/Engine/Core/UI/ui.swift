@@ -1,6 +1,14 @@
 import CSDL3_ttf
 import Foundation
 
+struct UITheme {
+  static let defaultTheme = UITheme()
+
+  var text: Color = .white
+  var background: Color = .black
+  var font = "Monogram Extended"
+
+}
 protocol UIComponent: Hashable {
   @UIBuilder var body: [any UIComponent] { get }
   var x: Int { get set }
