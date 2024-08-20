@@ -144,6 +144,10 @@ class Boot {
       var event = SDL_Event()
       while SDL_PollEvent(&event) != 0 {
         switch event.type {
+        case SDL_EVENT_MOUSE_WHEEL.rawValue:
+          game.mouse.scrollX = event.wheel.x
+          game.mouse.scrollY = event.wheel.y
+          break
         case SDL_EVENT_MOUSE_MOTION.rawValue:
           game.mouse.x = (event.motion.x) / Float(scale.x)
           game.mouse.y = (event.motion.y) / Float(scale.y)

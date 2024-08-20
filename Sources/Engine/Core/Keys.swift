@@ -1,23 +1,27 @@
 import CSDL3
 
+struct Mouse {
+  var x: Float = 0
+  var y: Float = 0
+  var dx: Float = 0
+  var dy: Float = 0
+  var scrollX: Float = 0
+  var scrollY: Float = 0
+  var left: Keys.KeyState = .up
+  var right: Keys.KeyState = .up
+  init(_ x: Float = 0, _ y: Float = 0) {
+    self.x = x
+    self.y = y
+  }
+}
 class Keys {
-  enum KeyState: Equatable {
+  public enum KeyState: Equatable {
     case down
     case released
     case up  // not pressed or released in the last frame
     case at(_ val: Int16)
   }
 
-  struct Mouse {
-    var x: Float = 0
-    var y: Float = 0
-    var dx: Float = 0
-    var dy: Float = 0
-    var scrollX: Int32 = 0
-    var scrollY: Int32 = 0
-    var left: KeyState = .up
-    var right: KeyState = .up
-  }
   struct State {
     var mouse: Mouse = Mouse()
     var keys: [Key: KeyState] = [:]

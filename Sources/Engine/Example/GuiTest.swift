@@ -6,7 +6,8 @@ class GuiTest: Game {
       Text("hello", fontSize: .Header)
       Text("world", fontSize: .Small)
       Spacer(size: 10)
-      Text("!")
+      Text("abcdefghijklmnopqrstuvwxyz", fontSize: .Body)
+      Text("0123456789", fontSize: .Body)
       Text("[I am before VStack]")
       HStack {
         Text("goodnight").with({ $0.color(.green) })

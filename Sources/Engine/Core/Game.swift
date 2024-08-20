@@ -10,18 +10,6 @@ struct Point {
   }
 }
 
-struct Mouse {
-  var x: Float
-  var y: Float
-
-  var left: Keys.KeyState = .up
-  var right: Keys.KeyState = .up
-
-  init(_ x: Float, _ y: Float) {
-    self.x = x
-    self.y = y
-  }
-}
 struct Weak<T: AnyObject> {
   weak var value: T?
 }
