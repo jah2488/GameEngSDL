@@ -136,6 +136,28 @@ class RendererManager {
     /// 20pt font
     case Small
   }
+
+  func getFont(at size: FontSize) -> OpaquePointer? {
+    switch size {
+    case .Banner:
+      return font
+    case .Title:
+      return font_18
+    case .Subtitle:
+      return font_16
+    case .Header:
+      return font_14
+    case .Subheader:
+      return font_12
+    case .Body:
+      return font_10
+    case .Large:
+      return font_18
+    case .Small:
+      return font_10
+    }
+  }
+
   let renderer: OpaquePointer!
   let font = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
   let font_18 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
@@ -213,25 +235,8 @@ class RendererManager {
     var width: Int32 = 0
     var height: Int32 = 0
     var count: Int32 = 0
-    let fontToMeasure =
-      switch fontSize {
-      case .Banner:
-        font
-      case .Title:
-        font_18
-      case .Subtitle:
-        font_16
-      case .Header:
-        font_14
-      case .Subheader:
-        font_12
-      case .Body:
-        font_10
-      case .Large:
-        font_18
-      case .Small:
-        font_10
-      }
+    let fontToMeasure = getFont(at: fontSize)
+
     TTF_SizeUTF8(fontToMeasure, text, &width, &height)
     TTF_MeasureUTF8(fontToMeasure, text, Int32(World.shared.width), &width, &count)
     return (width, height, count)
@@ -341,25 +346,7 @@ class RendererManager {
             renderer, text, &frameRect, rect, call.rotation, &oPoint, SDL_FLIP_NONE)
         }
       case .text:
-        let fontSize =
-          switch call.size {
-          case .Banner:
-            font
-          case .Title:
-            font_18
-          case .Subtitle:
-            font_16
-          case .Header:
-            font_14
-          case .Subheader:
-            font_12
-          case .Body:
-            font_10
-          case .Large:
-            font_18
-          case .Small:
-            font_10
-          }
+        let fontSize = getFont(at: call.size)
         let surface = TTF_RenderUTF8_Solid(
           fontSize,
           call.text,
