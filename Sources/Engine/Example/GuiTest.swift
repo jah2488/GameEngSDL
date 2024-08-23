@@ -1,4 +1,5 @@
 class GuiTest: Game {
+  var active = 0
   var clicks: Int = 0
   var buttonLabel: String = "Click me!"
   var gui0: some UIComponent {
@@ -34,11 +35,11 @@ class GuiTest: Game {
     }
   }
 
-  var space: Double = 20
+  var space: Double = 100
 
   var gui2: some UIComponent {
     var roundedSpace = space
-    roundedSpace.round(.up)
+    roundedSpace.round(.toNearestOrAwayFromZero)
     return HStack(spacing: Int(roundedSpace)) {
       column(alignment: .leading, text: "leading")
       column(alignment: .center, text: "center")
@@ -92,15 +93,35 @@ class GuiTest: Game {
   }
 
   override func draw() {
-    // gui0.render(offsetX: 10, offsetY: 10)
-    // gui1.render(offsetX: 0, offsetY: 0)
-    // gui2.render(offsetX: 10, offsetY: 70)
-    gui3.render(offsetX: 10, offsetY: 10)
+    switch active {
+    case 0:
+      gui0.render(offsetX: 10, offsetY: 10)
+    case 1:
+      gui1.render(offsetX: 10, offsetY: 10)
+    case 2:
+      gui2.render(offsetX: 10, offsetY: 10)
+    case 3:
+      gui3.render(offsetX: 10, offsetY: 10)
+    default:
+      break
+    }
+  }
+
+  override func input(keys: Keys.State) {
+    if keys.isReleased(.space) {
+      active += 1
+      if active > 3 {
+        active = 0
+      }
+      if active == 2 {
+        space = 150
+      }
+    }
   }
 
   override func update(delta: Double) {
-    if space > 0 {
-      space -= 10
+    if space > 0 && active == 2 {
+      space -= 20 * delta
     }
   }
 }
