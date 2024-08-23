@@ -55,7 +55,7 @@ class FallingSand: Game {
     super.init(rendererPointer: rendererPointer, name: name, width: width, height: height)
 
     texture = SDL_CreateTexture(
-      rendererPointer, SDL_PIXELFORMAT_ARGB8888, Int32(SDL_TEXTUREACCESS_STREAMING.rawValue),
+      rendererPointer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
       Int32(width), Int32(height)
     )
     // SDL_HideCursor()
