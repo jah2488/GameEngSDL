@@ -34,7 +34,7 @@ class GuiTest: Game {
     }
   }
 
-  var space: Double = 300
+  var space: Double = 20
 
   var gui2: some UIComponent {
     var roundedSpace = space
@@ -43,6 +43,31 @@ class GuiTest: Game {
       column(alignment: .leading, text: "leading")
       column(alignment: .center, text: "center")
       column(alignment: .trailing, text: "trailing")
+    }
+  }
+
+  var gui3: some UIComponent {
+    return Grid(vSpacing: 10, hSpacing: 40) {
+      GridRow {
+        Text("Row 1")
+        Box.from(Color.red)
+        Box.from(Color.red)
+      }
+      GridRow {
+        Text("Row 2")
+        Box.from(.green)
+        Box.from(.green)
+        Box.from(.green)
+        Box.from(.green)
+        Box.from(.green)
+      }
+      GridRow {
+        Text("Row 3")
+        Box.from(.blue)
+        Box.from(.blue)
+        Box.from(.blue)
+        Box.from(.blue)
+      }
     }
   }
 
@@ -67,13 +92,14 @@ class GuiTest: Game {
   }
 
   override func draw() {
-    gui.render(offsetX: 10, offsetY: 10)
-    gui2.render(offsetX: 10, offsetY: 70)
+    // gui.render(offsetX: 10, offsetY: 10)
+    // gui2.render(offsetX: 10, offsetY: 70)
+    gui3.render(offsetX: 10, offsetY: 10)
   }
 
   override func update(delta: Double) {
     if space > 0 {
-      space -= 1 * delta
+      space -= 10
     }
   }
 }

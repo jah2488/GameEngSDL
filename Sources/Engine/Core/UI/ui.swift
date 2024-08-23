@@ -19,7 +19,37 @@ protocol UIComponent: Hashable {
   func render(offsetX: Int, offsetY: Int)
 }
 
+struct Box: UIComponent {
+  @UIBuilder var body: [any UIComponent]
+  var x: Int = 0
+  var y: Int = 0
+  var width: Int
+  var height: Int
+  var color: Color
+
+  init(width: Int, height: Int, color: Color) {
+    self.width = width
+    self.height = height
+    self.color = color
+    self.body = []
+  }
+
+  func render(offsetX: Int, offsetY: Int) {
+    World.shared.r!.drawRect(
+      x: Float(x + offsetX),
+      y: Float(y + offsetY),
+      width: Float(width),
+      height: Float(height),
+      tint: color
+    )
+  }
+}
+
 extension UIComponent {
+  static func from(_ color: Color) -> some UIComponent {
+    return Box(width: 10, height: 10, color: color)
+  }
+
   func hash(into hasher: inout Hasher) {
     hasher.combine(body.description)
     hasher.combine(x)
