@@ -12,6 +12,9 @@ let SDL_WINDOW_HIGH_PIXEL_DENSITY = Uint64(0x0000_0000_0000_2000)
 /**< window uses high pixel density back buffer if possible */
 
 var __GAME_RENDERER: OpaquePointer!
+
+let physicalCores = ProcessInfo.processInfo.processorCount
+let threadPool = ThreadPool(threadsCount: physicalCores)
 class Main {
 
   static func run() {
