@@ -1,5 +1,15 @@
 import simd
 
+struct Point {
+  var x: Double
+  var y: Double
+
+  init(_ x: Double, _ y: Double) {
+    self.x = x
+    self.y = y
+  }
+}
+
 struct Weak<T: AnyObject> {
   weak var value: T?
 }
@@ -11,11 +21,14 @@ struct World {
   var height: Int = 600
 
   var a: Audio?
+  var r: RendererManager?
+  var m: Mouse = Mouse(0, 0)
 
   mutating func load(from: Game) {
     self.width = from.width
     self.height = from.height
     self.a = from.a
+    self.r = from.r
   }
 
   var entities: [Weak<Entity>] = []
@@ -28,6 +41,12 @@ struct World {
     entities.removeAll { $0.value == nil }
     entities.removeAll { ObjectIdentifier($0.value!) == ObjectIdentifier(entity) }
   }
+
+  func mouseOverRect(_ rect: Rect<Float>) -> Bool {
+    return rect.left < self.m.x && rect.right > self.m.x && rect.top < self.m.y
+      && rect.bottom > self.m.y
+  }
+
 }
 
 class Game {
@@ -60,7 +79,14 @@ class Game {
 
   var e: EventQueue
 
-  var mouse = simd_float2(0, 0)
+  var mouse: Mouse {
+    get {
+      return World.shared.m
+    }
+    set {
+      World.shared.m = newValue
+    }
+  }
 
   /// The color to clear the screen with each frame.
   var clearColor: Color = Color(r: 0, g: 0, b: 0, a: 255)
@@ -72,7 +98,7 @@ class Game {
     self.s = SceneManager.empty
     self.r = RendererManager(renderer: rendererPointer)
     self.a = Audio()
-    self.w = World()
+    self.w = World.shared
     self.e = EventQueue()
   }
 
@@ -249,6 +275,21 @@ struct Zipper<T> {
     left.insert(value, at: 0)
   }
 }
+struct SeededGenerator: RandomNumberGenerator {
+  private var state: UInt64
+
+  init(seed: UInt64) {
+    self.state = seed &+ 0x9E37_79B9_7F4A_7C15
+  }
+
+  mutating func next() -> UInt64 {
+    state &+= 0x9E37_79B9_7F4A_7C15
+    var z = state
+    z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
+    z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
+    return z ^ (z >> 31)
+  }
+}
 
 struct Color {
   var r: UInt8
@@ -261,6 +302,21 @@ struct Color {
   static let white = Color(r: 255, g: 255, b: 255, a: 255)
   static let green = Color(r: 0, g: 255, b: 0, a: 255)
   static let blue = Color(r: 0, g: 0, b: 255, a: 255)
+
+  static func random(_ obj: any Hashable) -> Color {
+    let seed = abs(obj.hashValue)
+    var generator = SeededGenerator(seed: UInt64(seed))
+    let r = UInt8.random(in: 0...255, using: &generator)
+    let g = UInt8.random(in: 0...255, using: &generator)
+    let b = UInt8.random(in: 0...255, using: &generator)
+    return Color(r: r, g: g, b: b, a: 255)
+  }
+  static func random() -> Color {
+    let r = UInt8.random(in: 0...255)
+    let g = UInt8.random(in: 0...255)
+    let b = UInt8.random(in: 0...255)
+    return Color(r: r, g: g, b: b, a: 255)
+  }
 }
 
 enum GameState {

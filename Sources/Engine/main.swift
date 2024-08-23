@@ -12,26 +12,34 @@ let SDL_WINDOW_HIGH_PIXEL_DENSITY = Uint64(0x0000_0000_0000_2000)
 /**< window uses high pixel density back buffer if possible */
 
 var __GAME_RENDERER: OpaquePointer!
+
+let physicalCores = ProcessInfo.processInfo.processorCount
+let threadPool = ThreadPool(threadsCount: physicalCores)
 class Main {
 
   static func run() {
 
     let name = "Sokoban"
-    let width: Int32 = 800 / 4
-    let height: Int32 = 420 / 4
+    let width: Int32 = 800 / 2
+    let height: Int32 = 420 / 2
 
     let boot = Boot(_name: name, _width: width, _height: height)
 
-    let asteroids_game = Asteroids(
+    // let asteroids_game = Asteroids(rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    // boot.run(game: asteroids_game)
+    // let fallingsand_game = FallingSand(
+    //   rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    // boot.run(game: fallingsand_game)
+
+    // let sokoban_game = Sokoban(
+    //   rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    // boot.run(game: sokoban_game)
+
+    let gui = GuiTest(
       rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
-    let fallingsand_game = FallingSand(
-      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
-    let sokoban_game = Sokoban(
-      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    boot.run(game: gui)
 
     __GAME_RENDERER = boot.renderer
-
-    boot.run(game: sokoban_game)
 
     //log.log all availabile renderers
     // todo: decide if this is worth saving as a util somewhere.

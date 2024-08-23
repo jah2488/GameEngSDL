@@ -25,6 +25,7 @@ struct RenderCall {
   let totalFrames: Int
   let blendMode: RendererManager.BlendMode
   let rotation: Double
+  let size: RendererManager.FontSize
   let origin: simd_float2?
   let text: String
   let onTop: Bool
@@ -49,6 +50,7 @@ struct RenderCall {
     self.rotation = 0
     self.origin = nil
     self.text = ""
+    self.size = .Body
     self.onTop = onTop
   }
 
@@ -73,12 +75,15 @@ struct RenderCall {
     self.origin = origin
     self.filled = false
     self.text = ""
+    self.size = .Body
     self.onTop = onTop
   }
 
   init(
     type: RenderCallType, x: Float, y: Float, width: Float, tile: UInt8 = 0, height: Float,
     text: String,
+    size: RendererManager.FontSize,
+    tint: Color = Color(r: 255, g: 255, b: 255, a: 255),
     onTop: Bool = false
   ) {
     self.type = type
@@ -88,7 +93,8 @@ struct RenderCall {
     self.width = width
     self.height = height
     self.text = text
-    self.tint = Color(r: 255, g: 255, b: 255, a: 255)
+    self.size = size
+    self.tint = tint
     self.tile = tile
     self.frame = 0
     self.totalFrames = 0
@@ -102,7 +108,7 @@ struct RenderCall {
 
 //TODO: Rename this class, bad name, not descriptive enough and weird to say.
 //All of these draw calls should be batched into a single list so they can be drawn in a single call and in the correct draw order and not dependent on when they're called.
-struct RendererManager {
+class RendererManager {
   enum BlendMode {
     case blend
     case add
@@ -110,14 +116,76 @@ struct RendererManager {
     case mul
     case none
   }
-  let renderer: OpaquePointer!
-  let font = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 64)
-  var batchedCalls: [RenderCall] = []
 
-  mutating func drawRect(
+  /// The font size to use for text rendering.
+  enum FontSize {
+    /// 48pt font
+    case Banner
+    /// 36pt font
+    case Title
+    /// 32pt font
+    case Subtitle
+    /// 28pt font
+    case Header
+    /// 24pt font
+    case Subheader
+    /// 20pt font
+    case Body
+    /// 36pt font
+    case Large
+    /// 20pt font
+    case Small
+  }
+
+  func getFont(at size: FontSize) -> OpaquePointer? {
+    switch size {
+    case .Banner:
+      return font
+    case .Title:
+      return font_18
+    case .Subtitle:
+      return font_16
+    case .Header:
+      return font_14
+    case .Subheader:
+      return font_12
+    case .Body:
+      return font_10
+    case .Large:
+      return font_18
+    case .Small:
+      return font_10
+    }
+  }
+
+  let renderer: OpaquePointer!
+  let font: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
+  let font_18: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
+  let font_16: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 32)
+  let font_14: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
+  let font_12: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
+  let font_10: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
+  var batchedCalls: [RenderCall]
+
+  init(renderer: OpaquePointer) {
+    print("RendererManager init")
+    self.renderer = renderer
+    self.batchedCalls = []
+    // TODO: Path should be loaded on boot and stored globally. Also all this font stuff should live in its own file.
+    var path = String(cString: SDL_GetBasePath()!)
+    font = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
+    font_18 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
+    font_16 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 32)
+    font_14 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
+    font_12 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
+    font_10 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
+    assert(font != nil, "Failed to load font")
+  }
+
+  func drawRect(
     x: Float, y: Float, width: Float, height: Float,
     tint: Color = Color(r: 255, g: 255, b: 255, a: 255),
-    filled: Bool = true, onTop: Bool = false
+    filled: Bool = false, onTop: Bool = false
   ) {
     batchedCalls.append(
       RenderCall(
@@ -125,7 +193,7 @@ struct RendererManager {
         onTop: onTop))
   }
 
-  mutating func drawTextureAnimated(
+  func drawTextureAnimated(
     resource: Asset, x: Float, y: Float, width: Int, height: Int,
     frame: Int, totalFrames: Int, rotation: Double,
     origin: simd_float2? = nil, blendMode: BlendMode = .blend, tint: Color, onTop: Bool = false
@@ -140,7 +208,7 @@ struct RendererManager {
       ))
   }
 
-  mutating func drawTexture(
+  func drawTexture(
     resource: any Resource,
     x: Float, y: Float, width: Float, height: Float, tile: UInt8
   ) {
@@ -156,7 +224,7 @@ struct RendererManager {
     )
   }
 
-  mutating func drawTexture(
+  func drawTexture(
     resource: any Resource, x: Float, y: Float, width: Float, height: Float, rotation: Double,
     origin: simd_float2? = nil,
     blendMode: BlendMode = .blend,
@@ -172,14 +240,30 @@ struct RendererManager {
         onTop: onTop))
   }
 
-  mutating func drawText(
-    text: String, x: Float, y: Float, width: Float, height: Float, onTop: Bool = false
-  ) {
-    batchedCalls.append(
-      RenderCall(type: .text, x: x, y: y, width: width, height: height, text: text, onTop: onTop))
+  func measureText(text: String, fontSize: FontSize) -> (Int32, Int32, Int32) {
+    var width: Int32 = 0
+    var height: Int32 = 0
+    var count: Int32 = 0
+    let fontToMeasure = getFont(at: fontSize)
+
+    TTF_SizeUTF8(fontToMeasure, text, &width, &height)
+    TTF_MeasureUTF8(fontToMeasure, text, Int32(World.shared.width), &width, &count)
+    return (width, height, count)
   }
 
-  mutating func _draw() {
+  func drawText(
+    text: String, size: FontSize = .Body, tint: Color = .white, x: Float, y: Float, width: Float,
+    height: Float,
+    onTop: Bool = false
+  ) {
+    batchedCalls.append(
+      RenderCall(
+        type: .text, x: x, y: y, width: width, height: height, text: text, size: size, tint: tint,
+        onTop: onTop)
+    )
+  }
+
+  func _draw() {
     batchedCalls.sort { $0.onTop && !$1.onTop }
     for call in batchedCalls {
       switch call.type {
@@ -271,8 +355,12 @@ struct RendererManager {
             renderer, text, &frameRect, rect, call.rotation, &oPoint, SDL_FLIP_NONE)
         }
       case .text:
-        let surface = TTF_RenderUTF8_Blended(
-          font, call.text, SDL_Color(r: 255, g: 255, b: 255, a: 255))
+        let fontSize = getFont(at: call.size)
+        let surface = TTF_RenderUTF8_Solid(
+          fontSize,
+          call.text,
+          SDL_Color(r: call.tint.r, g: call.tint.g, b: call.tint.b, a: call.tint.a)
+        )
         let texture = SDL_CreateTextureFromSurface(renderer, surface)
         var rect = SDL_FRect(x: call.x, y: call.y, w: call.width, h: call.height)
 

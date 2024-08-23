@@ -4,12 +4,14 @@ import CSDL3_mixer
 import CSDL3_ttf
 import Foundation
 
-let log = Logger(.error)
+//TODO: Move this to a more appropriate location, and let log levels be set when the game is about to be run
+let log = Logger(.warning)
 
 class Boot {
   var name: String
   var width: Int32
   var height: Int32
+  var scale: (x: Double, y: Double) = (1, 1)
 
   var window: OpaquePointer!
   var renderer: OpaquePointer!
@@ -21,7 +23,10 @@ class Boot {
     self.width = _width
     self.height = _height
 
-    SDL_Init(UInt32(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
+    let sdl_init_video = UInt32(0x0000_0020)
+    let sdl_init_gamepad = UInt32(0x0000_2000)
+    SDL_Init(sdl_init_gamepad)
+    SDL_InitSubSystem(sdl_init_video)
     IMG_Init(Int32(IMG_INIT_PNG.rawValue))
     TTF_Init()
     Mix_Init(Int32(MIX_INIT_MP3.rawValue))
@@ -29,7 +34,7 @@ class Boot {
     var count: Int32 = 0
     SDL_GetGamepads(&count)
     var gamepad: OpaquePointer!
-    for i: UInt32 in UInt32(0)..<(UInt32(10)) {
+    for i: UInt32 in UInt32(0)..<(UInt32(10)) {  // Seems reasonable to only look for 10 gamepads
       gamepad = SDL_OpenGamepad(UInt32(i))
       if gamepad != nil {
         break
@@ -44,14 +49,14 @@ class Boot {
     var spec = SDL_AudioSpec()
     spec.freq = 44100
     spec.channels = 2
-    spec.format = UInt16(MIX_DEFAULT_FORMAT)
+    spec.format = SDL_AudioFormat(0x8010)  //UInt16(MIX_DEFAULT_FORMAT)
     Mix_OpenAudio(1, &spec)
     if Mix_OpenAudio(0, &spec) < 0 {
       fatalError("Failed to open audio: \(String(cString: SDL_GetError()))")
     } else {
       Mix_QuerySpec(&spec.freq, &spec.format, &spec.channels)
       log.log(
-        "Opened audio at \(spec.freq) Hz \(spec.format&0xFF) bit \((spec.channels > 2) ? "surround" : (spec.channels > 1) ? "stereo" : "mono"))"
+        "Opened audio at \(spec.freq) Hz \(spec.format) bit \((spec.channels > 2) ? "surround" : (spec.channels > 1) ? "stereo" : "mono"))"
       )
     }
 
@@ -83,7 +88,8 @@ class Boot {
     SDL_DestroySurface(icon)
 
     SDL_SetRenderScale(renderer, 1, 1)
-    SDL_SetWindowSize(window, _width * 3, _height * 3)
+    SDL_SetWindowSize(window, _width * 4, _height * 4)
+    SDL_SetWindowPosition(window, 0, 0)
 
     self.width = _width
     self.height = _height
@@ -129,9 +135,11 @@ class Boot {
     game._start()
     log.start(time: Int(now))
     var keyStates = Keys.State()
-    var last_ticks = SDL_GetTicks()
+    let last_ticks = SDL_GetTicks()
     while game.isRunning {
       keyStates.resetReleased()
+      game.mouse.left == .released ? game.mouse.left = .up : ()
+      game.mouse.right == .released ? game.mouse.right = .up : ()
       let last = now
       now = SDL_GetPerformanceCounter()
       delta = Double((now - last) * 1000 / SDL_GetPerformanceFrequency()) * 0.001
@@ -139,9 +147,13 @@ class Boot {
       var event = SDL_Event()
       while SDL_PollEvent(&event) != 0 {
         switch event.type {
+        case SDL_EVENT_MOUSE_WHEEL.rawValue:
+          game.mouse.scrollX = event.wheel.x
+          game.mouse.scrollY = event.wheel.y
+          break
         case SDL_EVENT_MOUSE_MOTION.rawValue:
-          game.mouse.x = event.motion.x / 4
-          game.mouse.y = event.motion.y / 4
+          game.mouse.x = (event.motion.x) / Float(scale.x)
+          game.mouse.y = (event.motion.y) / Float(scale.y)
           keyStates.mouse.x = event.motion.x
           keyStates.mouse.y = event.motion.y
           keyStates.mouse.dx = event.motion.xrel
@@ -150,8 +162,10 @@ class Boot {
           if event.motion.state & mouseMask(1) == 1 {
             if event.motion.state & mouseMask(2) != 0 {
               keyStates.mouse.right = .down
+              game.mouse.right = .down
             } else {
               keyStates.mouse.left = .down
+              game.mouse.left = .down
             }
           }
           break
@@ -159,8 +173,10 @@ class Boot {
           if event.motion.state & mouseMask(1) == 1 {
             if event.motion.state & mouseMask(2) != 0 {
               keyStates.mouse.right = .released
+              game.mouse.right = .released
             } else {
               keyStates.mouse.left = .released
+              game.mouse.left = .released
             }
           }
           break
@@ -183,7 +199,6 @@ class Boot {
           keyStates.keys[Keys.key(from: event.key.key)] = .released
 
           if event.key.key == SDLK_ESCAPE {
-
             SDL_SetRenderLogicalPresentation(
               renderer, self.width, self.height, presentations[logical_presentation_index],
               SDL_SCALEMODE_NEAREST)
@@ -205,8 +220,14 @@ class Boot {
           break
         case SDL_EVENT_WINDOW_RESIZED.rawValue:
           log.log("window resized to \(event.window.data1), \(event.window.data2)")
+          let oldWidth = self.width
+          let oldHeight = self.height
           var rect = SDL_Rect(x: 0, y: 0, w: self.width, h: self.height)
           SDL_GetRenderViewport(renderer, &rect)
+          SDL_GetWindowSize(window, &self.width, &self.height)
+          scale = (
+            x: Double(self.width) / Double(oldWidth), y: Double(self.height) / Double(oldHeight)
+          )
           game.width = Int(rect.w)
           game.height = Int(rect.h)
           break
