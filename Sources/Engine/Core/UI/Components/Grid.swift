@@ -55,7 +55,6 @@ struct GridRow: UIComponent {
 
   mutating func setSpacing(_ spacing: Int) {
     self.spacing = spacing
-    print("set spacing to \(spacing)")
   }
 
   init(spacing: Int = 0, @UIBuilder content: () -> [any UIComponent]) {
