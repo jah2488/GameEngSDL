@@ -159,18 +159,27 @@ class RendererManager {
   }
 
   let renderer: OpaquePointer!
-  let font = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
-  let font_18 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
-  let font_16 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 32)
-  let font_14 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
-  let font_12 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
-  let font_10 = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
+  let font: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
+  let font_18: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
+  let font_16: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 32)
+  let font_14: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
+  let font_12: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
+  let font_10: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
   var batchedCalls: [RenderCall]
 
   init(renderer: OpaquePointer) {
     print("RendererManager init")
     self.renderer = renderer
     self.batchedCalls = []
+    // TODO: Path should be loaded on boot and stored globally. Also all this font stuff should live in its own file.
+    var path = String(cString: SDL_GetBasePath()!)
+    font = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
+    font_18 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
+    font_16 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 32)
+    font_14 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
+    font_12 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
+    font_10 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
+    assert(font != nil, "Failed to load font")
   }
 
   func drawRect(

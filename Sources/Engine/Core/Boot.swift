@@ -23,7 +23,10 @@ class Boot {
     self.width = _width
     self.height = _height
 
-    SDL_Init(UInt32(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
+    let sdl_init_video = UInt32(0x0000_0020)
+    let sdl_init_gamepad = UInt32(0x0000_2000)
+    SDL_Init(sdl_init_gamepad)
+    SDL_InitSubSystem(sdl_init_video)
     IMG_Init(Int32(IMG_INIT_PNG.rawValue))
     TTF_Init()
     Mix_Init(Int32(MIX_INIT_MP3.rawValue))
@@ -46,14 +49,14 @@ class Boot {
     var spec = SDL_AudioSpec()
     spec.freq = 44100
     spec.channels = 2
-    spec.format = UInt16(MIX_DEFAULT_FORMAT)
+    spec.format = SDL_AudioFormat(0x8010)  //UInt16(MIX_DEFAULT_FORMAT)
     Mix_OpenAudio(1, &spec)
     if Mix_OpenAudio(0, &spec) < 0 {
       fatalError("Failed to open audio: \(String(cString: SDL_GetError()))")
     } else {
       Mix_QuerySpec(&spec.freq, &spec.format, &spec.channels)
       log.log(
-        "Opened audio at \(spec.freq) Hz \(spec.format&0xFF) bit \((spec.channels > 2) ? "surround" : (spec.channels > 1) ? "stereo" : "mono"))"
+        "Opened audio at \(spec.freq) Hz \(spec.format) bit \((spec.channels > 2) ? "surround" : (spec.channels > 1) ? "stereo" : "mono"))"
       )
     }
 
