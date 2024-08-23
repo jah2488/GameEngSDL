@@ -27,6 +27,10 @@ struct Box: UIComponent {
   var height: Int
   var color: Color
 
+  static func from(_ color: Color) -> some UIComponent {
+    return Box(width: 20, height: 20, color: color)
+  }
+
   init(width: Int, height: Int, color: Color) {
     self.width = width
     self.height = height
@@ -40,15 +44,13 @@ struct Box: UIComponent {
       y: Float(y + offsetY),
       width: Float(width),
       height: Float(height),
-      tint: color
+      tint: color,
+      filled: true
     )
   }
 }
 
 extension UIComponent {
-  static func from(_ color: Color) -> some UIComponent {
-    return Box(width: 10, height: 10, color: color)
-  }
 
   func hash(into hasher: inout Hasher) {
     hasher.combine(body.description)
