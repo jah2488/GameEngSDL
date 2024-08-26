@@ -159,12 +159,12 @@ class RendererManager {
   }
 
   let renderer: OpaquePointer!
-  let font: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
-  let font_18: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
-  let font_16: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 32)
-  let font_14: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
-  let font_12: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
-  let font_10: OpaquePointer?  // = TTF_OpenFont("GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
+  let font: OpaquePointer?
+  let font_18: OpaquePointer?
+  let font_16: OpaquePointer?
+  let font_14: OpaquePointer?
+  let font_12: OpaquePointer?
+  let font_10: OpaquePointer?
   var batchedCalls: [RenderCall]
 
   init(renderer: OpaquePointer) {
@@ -172,14 +172,18 @@ class RendererManager {
     self.renderer = renderer
     self.batchedCalls = []
     // TODO: Path should be loaded on boot and stored globally. Also all this font stuff should live in its own file.
-    var path = String(cString: SDL_GetBasePath()!)
-    font = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 48)
-    font_18 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 36)
-    font_16 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 32)
-    font_14 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 28)
-    font_12 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 24)
-    font_10 = TTF_OpenFont("\(path)GameEngSDL_GameEngSDL.bundle/Assets/Monogram Extended.ttf", 20)
-    assert(font != nil, "Failed to load font")
+    if let fontPath = Bundle.module.path(
+      forResource: "Assets/Monogram Extended", ofType: "ttf")
+    {
+      self.font = TTF_OpenFont("\(fontPath)", 48)
+      self.font_18 = TTF_OpenFont("\(fontPath)", 36)
+      self.font_16 = TTF_OpenFont("\(fontPath)", 32)
+      self.font_14 = TTF_OpenFont("\(fontPath)", 28)
+      self.font_12 = TTF_OpenFont("\(fontPath)", 24)
+      self.font_10 = TTF_OpenFont("\(fontPath)", 20)
+    } else {
+      fatalError("Failed to load font")
+    }
   }
 
   func drawRect(

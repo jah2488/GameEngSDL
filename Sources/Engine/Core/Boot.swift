@@ -132,6 +132,8 @@ class Boot {
     ]
     var now = SDL_GetPerformanceCounter()
     var delta: Double = 0
+    var lastDelta: Double = 0
+    var tick: UInt64 = 0
     game._start()
     log.start(time: Int(now))
     var keyStates = Keys.State()
@@ -141,9 +143,15 @@ class Boot {
       game.mouse.left == .released ? game.mouse.left = .up : ()
       game.mouse.right == .released ? game.mouse.right = .up : ()
       let last = now
+      tick = SDL_GetTicks()
       now = SDL_GetPerformanceCounter()
-      delta = Double((now - last) * 1000 / SDL_GetPerformanceFrequency()) * 0.001
-      log.loop(ticks: Int(SDL_GetTicks()), time: Int(now), delta: delta)
+      lastDelta = delta
+      let newDelta = Double((now - last) * 1000 / SDL_GetPerformanceFrequency()) * 0.001
+      delta = (lastDelta + newDelta) / 2
+      log.loop(ticks: Int(tick), time: Int(now), delta: delta)
+      if tick % 10 == 0 {
+        SDL_SetWindowTitle(window, "tick: \(tick) - \((1 / delta).rounded()) fps")
+      }
       var event = SDL_Event()
       while SDL_PollEvent(&event) != 0 {
         switch event.type {
@@ -242,7 +250,9 @@ class Boot {
         game._input(keys: keyStates)
         log.dedent()
       }
-      if SDL_GetTicks() - last_ticks < 1000 / 10 {
+
+      if tick - last_ticks < 1000 / 10 {
+        print("too fast, skipping")
         continue
       }
 

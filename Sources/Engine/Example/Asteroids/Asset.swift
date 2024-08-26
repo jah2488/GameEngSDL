@@ -24,20 +24,13 @@ class Asset: Resource {
     self.width = 0
     self.height = 0
 
-    let url = Bundle.module.url(forResource: "Assets/\(self.name)", withExtension: self.ext)
+    let url = Bundle.module.path(forResource: "Assets/\(self.name)", ofType: self.ext)
     var out: OpaquePointer!
     switch self.type {
     case .texture:
-      guard let path = url?.absoluteString else {
-        log.log("Error loading asset: '\(self.path)' was not found.")
-        // Should this just crash?
-        return
-      }
-      if __GAME_RENDERER == nil {
-        log.log("Renderer not initialized, how did you get here?")
-        return
-      }
-      out = IMG_LoadTexture(__GAME_RENDERER, asRelativePath(path))
+      // TODO: Related to the todo in main.swift, this is a temporary solution to get the renderer to the asset
+      // the asset should not need to know about the renderer and should just be a data object
+      out = IMG_LoadTexture(__GAME_RENDERER, url)
       SDL_GetTextureSize(out, &self.width, &self.height)
       break
     case .font:
@@ -56,13 +49,6 @@ class Asset: Resource {
     if self.texture != nil {
       SDL_DestroyTexture(self.texture)
     }
-  }
-
-  func asRelativePath(_ path: String) -> String {
-    return
-      path
-      .replacingOccurrences(of: String(cString: SDL_GetBasePath()!), with: "")
-      .replacingOccurrences(of: "file://", with: "")
   }
 
   func hash(into hasher: inout Hasher) {

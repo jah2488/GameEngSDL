@@ -36,20 +36,12 @@ class Sound {
     self.id = UUID()
     self.type = ResourceType.sound
     self.path = path
-    let bundlePath = Bundle.module.url(forResource: "Assets/\(self.name)", withExtension: self.ext)
-    self.url = asRelativePath(bundlePath!.absoluteString)
+    self.url = Bundle.module.path(forResource: "Assets/\(self.name)", ofType: self.ext)!
   }
 
   func hash(into hasher: inout Hasher) {
     hasher.combine(path)
   }
-  func asRelativePath(_ path: String) -> String {
-    return
-      path
-      .replacingOccurrences(of: String(cString: SDL_GetBasePath()!), with: "")
-      .replacingOccurrences(of: "file://", with: "")
-  }
 
-  deinit {
-  }
+  deinit {}
 }

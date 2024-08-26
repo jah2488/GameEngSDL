@@ -24,9 +24,16 @@ class Main {
     let height: Int32 = 420 / 2
 
     let boot = Boot(_name: name, _width: width, _height: height)
+    // TODO: This needs to go
+    // Assets are currently loaded at initialization and passing the renderer to each asset is bad and a pain
+    // This is a temporary solution to get the renderer to the asset by making it globally accessible
+    // What is needed here is an AssetManager class that is created in the boot and passed to the game
+    // Assets can still be created as data objects, but they need to be loaded by the AssetManager
+    __GAME_RENDERER = boot.renderer
 
-    // let asteroids_game = Asteroids(rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
-    // boot.run(game: asteroids_game)
+    let asteroids_game = Asteroids(
+      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    boot.run(game: asteroids_game)
     // let fallingsand_game = FallingSand(
     //   rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
     // boot.run(game: fallingsand_game)
@@ -35,11 +42,9 @@ class Main {
     //   rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
     // boot.run(game: sokoban_game)
 
-    let gui = GuiTest(
-      rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
-    boot.run(game: gui)
-
-    __GAME_RENDERER = boot.renderer
+    // let gui = GuiTest(
+    // rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+    // boot.run(game: gui)
 
     //log.log all availabile renderers
     // todo: decide if this is worth saving as a util somewhere.
