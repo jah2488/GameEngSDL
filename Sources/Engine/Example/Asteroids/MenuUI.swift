@@ -1,4 +1,3 @@
-import CSDL3_ttf
 import Foundation
 
 class MenuUI: Entity {
