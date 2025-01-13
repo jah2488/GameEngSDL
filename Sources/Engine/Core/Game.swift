@@ -1,6 +1,12 @@
 import simd
 
 class Game {
+  enum GameState {
+    case running
+    case paused
+    case stopped
+  }
+
   /// The width of the viewport of the game in pixels.
   var width: Int
   /// The height of the viewport of the game in pixels.
@@ -33,7 +39,14 @@ class Game {
 
   var e: EventQueue
 
-  var mouse = simd_float2(0, 0)
+  var mouse: Mouse {
+    get {
+      return World.shared.m
+    }
+    set {
+      World.shared.m = newValue
+    }
+  }
 
   /// The color to clear the screen with each frame.
   var clearColor: Color = Color(r: 0, g: 0, b: 0, a: 255)
@@ -129,117 +142,4 @@ class Game {
     self.s.current()._load()
     self.s.current()._start(game: self)
   }
-}
-
-struct Rect<T: Numeric & Comparable & BinaryFloatingPoint> {
-  var x: T
-  var y: T
-  var width: T
-  var height: T
-  // Convenience properties for readability
-  var left: T { return x }
-  var right: T { return x + width }
-  var top: T { return y }
-  var bottom: T { return y + height }
-
-  var minX: T { return x }
-  var midX: T { return x + width / 2 }  //(0.5 as! T) }
-  var maxX: T { return x + width }
-
-  var center: simd_float2 { return simd_float2(Float(midX), Float(midY)) }
-
-  var minY: T { return y }
-  var midY: T { return y + height / 2 }
-  var maxY: T { return y + height }
-
-  // Method to check overlap with another rectangle
-  @inlinable
-  func overlaps(with other: Rect) -> Bool {
-    return
-      !(left >= other.right || right <= other.left || top >= other.bottom || bottom <= other.top)
-  }
-}
-
-class SceneManager {
-  var scenes: Zipper<Scene>
-
-  static var empty: SceneManager {
-    return SceneManager(scene: Scene(name: "NullScene"))
-  }
-
-  init(scene: Scene) {
-    self.scenes = Zipper(left: [], current: scene, right: [])
-  }
-
-  init(_ scenes: [Scene]) {
-    if scenes.isEmpty {
-      fatalError("SceneManager must have at least one scene.")
-    }
-    self.scenes = Zipper(left: [], current: scenes[0], right: Array(scenes.dropFirst()))
-  }
-
-  func current() -> Scene {
-    return scenes.current
-  }
-
-  func changeScene(_ scene: Scene) {
-    scenes.addNext(scene)
-    scenes.next()
-  }
-}
-
-struct Zipper<T> {
-  var left: [T]
-  var current: T
-  var right: [T]
-
-  func all() -> [T] {
-    return left + [current] + right
-  }
-
-  mutating func next() {
-    if right.isEmpty {
-      return
-    }
-    var newRight = right
-    let newCurrent = newRight.removeFirst()
-    self.left = left + [current]
-    self.current = newCurrent
-    self.right = newRight
-  }
-
-  mutating func addNext(_ value: T) {
-    right.insert(value, at: 0)
-  }
-
-  mutating func addPrevious(_ value: T) {
-    left.append(value)
-  }
-
-  mutating func append(_ value: T) {
-    right.append(value)
-  }
-
-  mutating func prepend(_ value: T) {
-    left.insert(value, at: 0)
-  }
-}
-
-struct Color {
-  var r: UInt8
-  var g: UInt8
-  var b: UInt8
-  var a: UInt8
-
-  static let red = Color(r: 255, g: 0, b: 0, a: 255)
-  static let black = Color(r: 0, g: 0, b: 0, a: 255)
-  static let white = Color(r: 255, g: 255, b: 255, a: 255)
-  static let green = Color(r: 0, g: 255, b: 0, a: 255)
-  static let blue = Color(r: 0, g: 0, b: 255, a: 255)
-}
-
-enum GameState {
-  case running
-  case paused
-  case stopped
 }

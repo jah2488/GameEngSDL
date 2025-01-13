@@ -55,7 +55,7 @@ class FallingSand: Game {
     super.init(rendererPointer: rendererPointer, name: name, width: width, height: height)
 
     texture = SDL_CreateTexture(
-      rendererPointer, SDL_PIXELFORMAT_ARGB8888, Int32(SDL_TEXTUREACCESS_STREAMING.rawValue),
+      rendererPointer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
       Int32(width), Int32(height)
     )
     // SDL_HideCursor()
@@ -341,7 +341,7 @@ class FallingSand: Game {
   let fps: Double = (1000 / 120) / 1000
   override func update(delta: Double) {
     elapsed += delta
-    cursor.position = self.mouse
+    cursor.position = simd_float2(Float(self.mouse.x), Float(self.mouse.y))
     cursor.update(delta: delta)
     //Update each pixel based on its neighbors and its type
     self.updatePixels()

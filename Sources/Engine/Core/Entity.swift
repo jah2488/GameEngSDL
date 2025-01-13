@@ -124,8 +124,8 @@ class Entity: Renderable {
   /// Note: Multiple entities with this set to true will be drawn in the order they were added.
   var alwaysOnTop: Bool = false
 
-  /// If true, the entity will be drawn with a debug texture around its bounding box.
   // TODO: Find a way to set this flag recursively any part of a render heirarchy.
+  /// If true, the entity will be drawn with a debug texture around its bounding box.
   var debugRender: Bool = true
 
   /// Bounds of the entity.

@@ -95,8 +95,3 @@ func clamp(_ value: inout Double, min: Double, max: Double) {
     value = max
   }
 }
-
-struct Vector2 {
-  var x: Double
-  var y: Double
-}
