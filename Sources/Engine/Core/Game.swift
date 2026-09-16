@@ -31,8 +31,11 @@ class Game {
   /// Helper property to access the Audio System
   var a: Audio
 
-  /// Private Helper property to access the state of the world
+  /// Helper property to access the state of the world
   var w: World
+
+  /// Helper proper to access the global InputMap
+  var i: InputMap
 
   var e: EventQueue
 
@@ -57,12 +60,14 @@ class Game {
     self.a = Audio()
     self.w = World.shared
     self.e = EventQueue()
+    self.i = InputMap.shared
   }
 
   final func _start() {
     self.state = .running
     self.start()
     World.shared.load(from: self)
+    self.i.addDefaultBindings()
     log.log("Game _start()")
     self.s.current()._load()
     self.s.current()._start(game: self)
@@ -112,12 +117,12 @@ class Game {
     }
   }
 
-  final func _input(keys: Keys.State) {
-    self.input(keys: keys)
-    self.s.current()._input(keys: keys, game: self)
+  final func _input(event: InputEvent, keys: Keys.State) {
+    self.input(event: event, keys: keys)
+    self.s.current()._input(event: event, keys: keys, game: self)
   }
 
-  func input(keys: Keys.State) {}
+  func input(event: InputEvent, keys: Keys.State) {}
 
   final func _destroy() {
     self.destroy()

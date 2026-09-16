@@ -20,8 +20,8 @@ class Main {
   static func run() {
 
     let name = "Sokoban"
-    let width: Int32 = 800 / 2
-    let height: Int32 = 420 / 2
+    let width: Int32 = 800
+    let height: Int32 = 420
 
     let boot = Boot(_name: name, _width: width, _height: height)
     // TODO: This needs to go
@@ -33,6 +33,7 @@ class Main {
 
     let asteroids_game = Asteroids(
       rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))
+
     boot.run(game: asteroids_game)
     // let fallingsand_game = FallingSand(
     //   rendererPointer: boot.renderer, name: name, width: Int(boot.width), height: Int(boot.height))

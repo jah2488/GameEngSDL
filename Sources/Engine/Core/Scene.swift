@@ -83,15 +83,15 @@ class Scene: Renderable {
   }
   func update(delta: Double) {}
 
-  final func _input(keys: Keys.State, game: Game) {
+  final func _input(event: InputEvent, keys: Keys.State, game: Game) {
     if isLoaded {
-      input(keys: keys, game: game)
+      input(event: event, keys: keys, game: game)
       self.children.forEach { node in
-        node._input(keys: keys, game: game)
+        node._input(event: event, keys: keys, game: game)
       }
     }
   }
-  func input(keys: Keys.State, game: Game) {}
+  func input(event: InputEvent, keys: Keys.State, game: Game) {}
 
   final func _destroy() {
     print("Destroying \(self)")
